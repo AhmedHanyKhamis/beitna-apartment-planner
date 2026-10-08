@@ -120,9 +120,23 @@ export function applyMeasuredDimensions(s){
   const oldRoom=before.rooms.find(r=>r.usable&&pointInPoly([o.x,o.y],r.poly));if(!oldRoom)continue;
   const room=after.rooms.find(r=>r.id===oldRoom.id),a=minimum(oldRoom),b=minimum(room);
   o.x+=b[0]-a[0];o.y+=b[1]-a[1];
+  keepObjectInRoom(o,room,s.params.wallThickness.value);
  }
  s.measurementRevision=measurementRevision;s.notes=measurementNotes;
  return s;
+}
+// On a survey update, shrinking a room must not strand existing furniture beyond
+// its floor. Keep physical sizes; choose the nearest fitting position in that room.
+function keepObjectInRoom(o,room,wallThickness){
+ const isFurniture=Number.isFinite(o.w),pad=isFurniture?wallThickness/2+.015:.04;
+ const shape=()=>isFurniture?corners(o,pad):[[o.x,o.y]];
+ const fits=()=>shape().every(p=>pointInPoly(p,room.poly));if(fits())return;
+ const original=[o.x,o.y],t=(o.rotation||0)*Math.PI/180;
+ const halfX=isFurniture?Math.abs(Math.cos(t))*(o.w/2+pad)+Math.abs(Math.sin(t))*(o.d/2+pad):pad;
+ const halfY=isFurniture?Math.abs(Math.sin(t))*(o.w/2+pad)+Math.abs(Math.cos(t))*(o.d/2+pad):pad;
+ const xs=[o.x,...room.poly.flatMap(p=>[p[0]+halfX+.001,p[0]-halfX-.001])],ys=[o.y,...room.poly.flatMap(p=>[p[1]+halfY+.001,p[1]-halfY-.001])];
+ let best=null,distance=Infinity;for(const x of xs)for(const y of ys){o.x=x;o.y=y;const d=(x-original[0])**2+(y-original[1])**2;if(d<distance&&fits()){best=[x,y];distance=d;}}
+ [o.x,o.y]=best||original;
 }
 export function pointInPoly([x,y],p){let inside=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const a=p[i],b=p[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;}
 export function corners(o,pad=0){const t=o.rotation*Math.PI/180,c=Math.cos(t),s=Math.sin(t);return [[-1,-1],[1,-1],[1,1],[-1,1]].map(([x,y])=>[o.x+x*(o.w/2+pad)*c-y*(o.d/2+pad)*s,o.y+x*(o.w/2+pad)*s+y*(o.d/2+pad)*c]);}

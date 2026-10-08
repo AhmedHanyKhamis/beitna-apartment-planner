@@ -1,7 +1,7 @@
 // Regression values transcribed from the clarified PDF and recorded corrections.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {initialState,geometry,applyMeasuredDimensions,validateState,clone} from '../src/model.js';
+import {initialState,geometry,applyMeasuredDimensions,validateState,clone,corners,pointInPoly} from '../src/model.js';
 import {measurementRevision} from '../src/measurement-data.js';
 import {Store} from '../src/store.js';
 const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-8,`${actual} != ${expected}`);
@@ -31,4 +31,8 @@ test('measurement update persists, preserves named old designs, and undo restore
  const values=new Map(),storage={getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},store=new Store(storage);
  store.state.measurementRevision='2026-10-08-measured-01';store.state.params.lobbyDepth.value=.8;store.state.params.receptionTail.value=4.2;store.saveScenario('قبل تحديث المقاسات');const before=clone(store.state),scenarios=clone(store.scenarios);
  store.commit(s=>applyMeasuredDimensions(s));const updated=clone(store.state);assert.deepEqual(new Store(storage).state,updated);assert.deepEqual(store.scenarios,scenarios);store.undo();assert.deepEqual(store.state,before);store.redo();assert.deepEqual(store.state,updated);assert.deepEqual(store.scenarios,scenarios);
+});
+test('shrinking the old reception keeps its furniture inside the new floor without resizing',()=>{
+ const s=initialState();s.measurementRevision='2026-10-08-measured-01';s.params.lobbyDepth.value=.8;s.params.receptionTail.value=4.2;s.params.receptionWidth.value=2.5;s.params.balconyWidth.value=.75;
+ const sofa=s.items.find(o=>o.id==='guest-sofa');Object.assign(sofa,{x:1.8,y:15.7,rotation:0,w:2.1,d:.85});const sizes=[sofa.w,sofa.d,sofa.h];applyMeasuredDimensions(s);validateState(s);const room=geometry(s).rooms.find(r=>r.id==='reception');assert.ok(corners(sofa).every(p=>pointInPoly(p,room.poly)));assert.deepEqual([sofa.w,sofa.d,sofa.h],sizes);assert.ok(sofa.x>1.8);assert.ok(sofa.y<14.12);
 });
