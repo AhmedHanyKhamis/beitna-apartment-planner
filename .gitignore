@@ -1,0 +1,12 @@
+node_modules/
+github-pages/
+*.zip
+tests/*.png
+tests/*.pdf
+tests/*-design.json
+preview.png
+Thumbs.db
+.DS_Store
+github-connection.cjs
+publish-github.cjs
+.publish-status.json

@@ -1,0 +1,28 @@
+{
+  "checks": [
+    "Initial confirmed layout, valid WebGL, both views, desktop layout and no page overflow",
+    "Resize and rotate furniture update matching metric 2D and 3D transforms",
+    "Undo and redo restore furniture state",
+    "Pointer drag snaps to 5 cm, synchronizes both views and is one undo transaction",
+    "Keyboard move and rotate",
+    "Add, duplicate and delete furniture",
+    "Dimension changes preserve shared walls, court end, furniture sizes and measured status",
+    "Invalid geometry edit rejected and rolled back",
+    "Automatic local save survives a browser reload",
+    "Named scenarios preserve all design data and survive reload",
+    "JSON download and import round trip complete state",
+    "Malformed JSON import leaves the current design intact",
+    "All cooking, bathing and heater alternatives synchronize and reverse",
+    "Opening width, swing and measurement status edits persist in both views",
+    "Editable service points, 3D elevations and nonduplicating suggestions",
+    "Furniture is selectable directly inside the 3D scene",
+    "Real 3D orbit, perspective zoom and full-height/cutaway walls change rendered pixels",
+    "Printable dimensioned plan, measured/estimated provenance, opening widths and PDF preview",
+    "Desktop 1280px and narrow 600px layouts without horizontal overflow",
+    "No browser console errors, uncaught errors or WebGL errors"
+  ],
+  "errors": [],
+  "started": "2026-10-08T14:40:18.267Z",
+  "passed": true,
+  "finished": "2026-10-08T14:40:24.519Z"
+}
