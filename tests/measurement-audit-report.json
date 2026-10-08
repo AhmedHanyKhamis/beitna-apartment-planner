@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "revision": "2026-10-08-measured-02",
+  "units": "metres",
+  "nodeTests": 18,
+  "source": "مقاسات-الموضحة.pdf + design-draft/measured-dimensions.json",
+  "modelArea": 112.22470000000003,
+  "roomAreas": {
+    "children": 16.56,
+    "bedroom": 15.120000000000006,
+    "office": 16.5625,
+    "hall": 9.522499999999996,
+    "ensuite": 4.028000000000002,
+    "bath": 5.936000000000011,
+    "lobby": 3.0961999999999996,
+    "kitchen": 10.562500000000014,
+    "reception": 26.006399999999996,
+    "balcony": 4.8306
+  },
+  "browserChecks": [
+    "12 rendered floor polygons agree between SVG and WebGL",
+    "37 furniture positions and rotations agree between views",
+    "Old saves show an update notice",
+    "Measurement update changes reception from 8.25 to 5.82 m and ceiling from 2.90 to 3.10 m",
+    "Update can be undone and redone and survives reload",
+    "Keyboard change of kitchen depth to 3.50 m updates both views",
+    "Reset restores latest measured default",
+    "Local source app updated with a named backup",
+    "No browser console errors"
+  ],
+  "defaultWarnings": [
+    {
+      "ids": [
+        "washer"
+      ],
+      "message": "الغسالة في الطرقة الصغيرة: العمق المتبقي حوالي 0.57 م؛ جرّب موضعًا لا يضيّق المرور.",
+      "severity": "warning"
+    }
+  ],
+  "remainingMeasurementQuestion": "Ensuite depth 2.00 m on sheet versus 1.90 m derived from aligned office/bath measurements"
+}
