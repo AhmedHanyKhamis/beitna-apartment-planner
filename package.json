@@ -1,1 +1,11 @@
-{"name":"our-apartment","version":"1.0.0","private":true,"type":"module","scripts":{"start":"node server.js","test":"node tests/model.test.js","prepare:pages":"node prepare-pages.js"}}
+{
+  "name": "our-apartment",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/run-tests.js",
+    "prepare:pages": "node prepare-pages.js"
+  }
+}

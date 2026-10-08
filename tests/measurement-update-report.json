@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "checks": [
+    "Measured-dimension button updates geometry",
+    "Furniture dimensions and IDs preserved",
+    "Undo and redo restore exact state",
+    "Save/reload retains new dimensions",
+    "Named scenario remains available",
+    "Standalone offline bundle has measured defaults and valid 3D",
+    "No page errors"
+  ]
+}

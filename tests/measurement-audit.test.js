@@ -1,0 +1,34 @@
+// Regression values transcribed from the clarified PDF and recorded corrections.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {initialState,geometry,applyMeasuredDimensions,validateState,clone} from '../src/model.js';
+import {measurementRevision} from '../src/measurement-data.js';
+import {Store} from '../src/store.js';
+const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-8,`${actual} != ${expected}`);
+const sizes=r=>{const xs=r.poly.map(p=>p[0]),ys=r.poly.map(p=>p[1]);return [Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)];};
+test('room polygons use the latest survey, including reception segments and lobby',()=>{
+ const s=initialState(),g=geometry(s),room=id=>g.rooms.find(r=>r.id===id);validateState(s);
+ for(const [id,expected]of Object.entries({children:[4.6,3.6],bedroom:[4.2,3.6],office:[3.6,4.7],bath:[2.12,2.8],lobby:[2.26,1.37],kitchen:[3.25,3.25]}))sizes(room(id)).forEach((v,i)=>near(v,expected[i]));
+ const reception=room('reception');near(sizes(reception)[1],5.82);near(reception.poly[4][0]-reception.poly[5][0],3.5);near(reception.poly[4][1]-reception.poly[3][1],1.2);near(g.ceiling,3.1);near(g.usableArea,112.2247);
+ near(room('office').area,3.6*4.7-.25*1.43);near(room('lobby').area,2.26*1.37);
+ near(Math.max(...room('courtyard').poly.map(p=>p[1])),Math.min(...room('kitchen').poly.map(p=>p[1])));
+ assert.equal(s.measurementRevision,measurementRevision);
+});
+test('all nine doors and eight windows retain the measured widths and heights without clamping',()=>{
+ const openings=geometry(initialState()).walls.flatMap(w=>w.openings),expected={
+  'door-entry':[1.05,2.3],'door-office':[.93,2.3],'door-children':[.90,2.3],'door-bedroom':[.95,2.3],'door-ensuite':[.90,2.3],'door-bath':[.90,2.3],'door-kitchen':[.93,2.3],'door-office-balcony':[.83,2.3],'door-balcony':[1.20,2.3],
+  'window-children':[1.60,1.18],'window-office':[1.54,1.16],'window-reception':[1.54,1.20],'window-bedroom':[.83,1.02],'window-ensuite':[.82,.82],'window-bath':[.82,.82],'window-lobby':[1.02,.80],'window-kitchen':[.95,1.00]
+ };assert.equal(openings.filter(o=>o.type!=='passage').length,17);
+ for(const [id,[w,h]]of Object.entries(expected)){const o=openings.find(o=>o.id===id);assert.ok(o,id);near(o.width,w);near(o.height,h);assert.equal(o.status,'measured');}
+});
+test('a previous measured revision updates every corrected length and ceiling while retaining furniture',()=>{
+ const s=initialState();s.measurementRevision='2026-10-08-measured-01';s.params.lobbyDepth={value:.8,status:'measured'};s.params.lobbyWidth={value:2.12,status:'derived'};s.params.receptionTail={value:4.2,status:'user-estimate'};s.params.receptionWidth={value:2.5,status:'user-estimate'};s.params.balconyWidth={value:.75,status:'user-estimate'};s.params.ceilingHeight={value:2.9,status:'measured'};
+ s.openingOverrides['door-bedroom']={width:.85,height:2.1,anchor:.12,swing:1,hinge:1};const items=clone(s.items);
+ applyMeasuredDimensions(s);validateState(s);const g=geometry(s);near(g.bands.D-g.bands.H,5.82);near(s.params.lobbyWidth.value,2.26);near(s.params.lobbyDepth.value,1.37);near(g.ceiling,3.1);
+ assert.deepEqual(s.items.map(o=>[o.id,o.type,o.w,o.d,o.h,o.rotation]),items.map(o=>[o.id,o.type,o.w,o.d,o.h,o.rotation]));near(s.openingOverrides['door-bedroom'].width,.95);near(s.openingOverrides['door-bedroom'].anchor,.12);assert.equal(s.openingOverrides['door-bedroom'].hinge,1);
+});
+test('measurement update persists, preserves named old designs, and undo restores their previous geometry',()=>{
+ const values=new Map(),storage={getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},store=new Store(storage);
+ store.state.measurementRevision='2026-10-08-measured-01';store.state.params.lobbyDepth.value=.8;store.state.params.receptionTail.value=4.2;store.saveScenario('قبل تحديث المقاسات');const before=clone(store.state),scenarios=clone(store.scenarios);
+ store.commit(s=>applyMeasuredDimensions(s));const updated=clone(store.state);assert.deepEqual(new Store(storage).state,updated);assert.deepEqual(store.scenarios,scenarios);store.undo();assert.deepEqual(store.state,before);store.redo();assert.deepEqual(store.state,updated);assert.deepEqual(store.scenarios,scenarios);
+});
