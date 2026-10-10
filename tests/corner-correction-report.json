@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-09",
+  "measurementRevision": "2026-10-09-corner-03",
+  "estimatedDisplacementMetres": 0.9,
+  "checks": {
+    "matchingRooms": true,
+    "unchangedOtherRooms": true,
+    "furniturePreserved": true,
+    "upperDoorWallFixed": true
+  },
+  "browser": {
+    "undoRestoredPreviousWall": true,
+    "redoRestoredCorrectedWall": true,
+    "editingOfficeWidthTo4_55FixedDoorAndServiceWalls": true,
+    "reloadPreservedCorrectedShape": true,
+    "githubPagesBundleMatchedCorrectedGeometry": true,
+    "githubPagesConsoleErrors": 0
+  },
+  "items": 37,
+  "office": {
+    "id": "office",
+    "poly": [
+      [
+        0,
+        3.6
+      ],
+      [
+        3.35,
+        3.6
+      ],
+      [
+        3.35,
+        5.03
+      ],
+      [
+        4.5,
+        5.03
+      ],
+      [
+        4.5,
+        8.3
+      ],
+      [
+        0,
+        8.3
+      ]
+    ]
+  },
+  "hall": {
+    "id": "hall",
+    "poly": [
+      [
+        3.35,
+        3.6
+      ],
+      [
+        5.55,
+        3.6
+      ],
+      [
+        5.55,
+        8.3
+      ],
+      [
+        4.5,
+        8.3
+      ],
+      [
+        4.5,
+        5.03
+      ],
+      [
+        3.35,
+        5.03
+      ]
+    ]
+  }
+} 

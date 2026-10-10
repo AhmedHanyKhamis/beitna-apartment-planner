@@ -5,8 +5,8 @@ export const SCHEMA=1;
 export const clone=v=>JSON.parse(JSON.stringify(v));
 export const uid=()=>globalThis.crypto?.randomUUID?.()||`id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 export const parameterInfo={
-  leftWidth:['عرض أوضة الأطفال',4.6,3,7],officeWidth:['عرض المكتب - الحيطة B',3.6,2.5,7],
-  officeNotchWidth:['عرض ركنة المكتب B ناقص A',.25,.15,1.5],hallWidth:['عرض طرقة الأوض بعد ركنة المكتب',1.95,.75,4],
+  leftWidth:['عرض أوضة الأطفال',4.6,3,7],officeWidth:['عرض المكتب بعد الركنة',4.5,2.5,7],
+  officeNotchWidth:['عرض الردّة الأفقية عند باب المكتب',1.15,.15,1.5],hallWidth:['عرض طرقة الأوض بعد ركنة المكتب',1.05,.75,4],
   kitchenWidth:['عرض المطبخ شامل امتداد المنور',3.25,2.5,5],courtyardWidth:['عرض المنور المستنتج',1.13,.5,1.8],
   bedroomDepth:['عمق أوض النوم',3.6,3,6],ensuiteDepth:['عمق حمام النوم المستنتج',1.9,1.2,3.5],
   bathDepth:['عمق الحمام الكبير',2.8,1.8,4],lobbyDepth:['الطرقة الصغيرة بين الحمام والمطبخ',1.37,.65,2],
@@ -104,7 +104,15 @@ export function geometry(s){
 export function wallPoint(w,d){const t=d/w.length;return [w.a[0]+(w.b[0]-w.a[0])*t,w.a[1]+(w.b[1]-w.a[1])*t];}
 export function wallPieces(w){let cursor=0;const out=[];for(const o of [...w.openings].sort((a,b)=>a.center-b.center)){const a=o.center-o.width/2,b=o.center+o.width/2;if(a>cursor)out.push({a:wallPoint(w,cursor),b:wallPoint(w,a),z:0,h:null});if(o.type==='window')out.push({a:wallPoint(w,a),b:wallPoint(w,b),z:0,h:o.sill});if(o.type!=='passage')out.push({a:wallPoint(w,a),b:wallPoint(w,b),z:(o.sill||0)+o.height,h:null});cursor=b;}if(cursor<w.length)out.push({a:wallPoint(w,cursor),b:w.b,z:0,h:null});return out;}
 export function editDimension(s,key,value,status){const spec=parameterInfo[key];if(!spec||!Number.isFinite(value)||value<spec[2]||value>spec[3])throw Error('المقاس خارج المجال المتاح للحفاظ على التقسيمة.');
- const before=geometry(s);s.params[key]={value,status:status||s.params[key].status};if(s.params.kitchenWidth.value-s.params.courtyardWidth.value<1.6)throw Error('عرض الحمامات المتبقي أقل من 1.6 متر.');if(s.params.entryReturn.value>s.params.ensuiteDepth.value)throw Error('ركنة المكتب يجب أن تنتهي قبل حائط الحمامين.');const after=geometry(s);
+ const before=geometry(s);s.params[key]={value,status:status||s.params[key].status};
+ // This field adjusts the shared office/hall boundary, keeping the door return
+ // and service-side wall fixed, as the user's red-line correction specifies.
+ if(key==='officeWidth'){
+  const hall=before.bands.R-value,notch=value-before.bands.X;
+  if(hall<parameterInfo.hallWidth[2]||hall>parameterInfo.hallWidth[3]||notch<parameterInfo.officeNotchWidth[2]||notch>parameterInfo.officeNotchWidth[3])throw Error('موضع الحيطة لا يترك عرضًا مناسبًا للطرقة والردّة.');
+  s.params.hallWidth={value:hall,status:'derived'};s.params.officeNotchWidth={value:notch,status:s.params.officeNotchWidth.status};
+ }
+ if(s.params.kitchenWidth.value-s.params.courtyardWidth.value<1.6)throw Error('عرض الحمامات المتبقي أقل من 1.6 متر.');if(s.params.entryReturn.value>s.params.ensuiteDepth.value)throw Error('ركنة المكتب يجب أن تنتهي قبل حائط الحمامين.');const after=geometry(s);
  // Translate room-relative items, preserving physical furniture sizes and rotations.
  for(const collection of [s.items,s.servicePoints])for(const o of collection){const r=before.rooms.find(r=>r.usable&&pointInPoly([o.x,o.y],r.poly));if(!r)continue;const n=after.rooms.find(n=>n.id===r.id);const min=p=>[Math.min(...p.map(v=>v[0])),Math.min(...p.map(v=>v[1]))];const a=min(r.poly),b=min(n.poly);o.x+=b[0]-a[0];o.y+=b[1]-a[1];}
  return s;

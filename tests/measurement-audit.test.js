@@ -1,16 +1,22 @@
 // Regression values transcribed from the clarified PDF and recorded corrections.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {initialState,geometry,applyMeasuredDimensions,validateState,clone,corners,pointInPoly} from '../src/model.js';
+import {initialState,geometry,applyMeasuredDimensions,validateState,clone,corners,pointInPoly,editDimension} from '../src/model.js';
 import {measurementRevision} from '../src/measurement-data.js';
 import {Store} from '../src/store.js';
 const near=(actual,expected)=>assert.ok(Math.abs(actual-expected)<1e-8,`${actual} != ${expected}`);
 const sizes=r=>{const xs=r.poly.map(p=>p[0]),ys=r.poly.map(p=>p[1]);return [Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys)];};
+test('red-line correction moves only the lower office wall and conserves the floor area',()=>{
+ const s=initialState();Object.assign(s.params,{officeWidth:{value:3.6,status:'measured'},hallWidth:{value:1.95,status:'derived'},officeNotchWidth:{value:.25,status:'user-estimate'}});const before=geometry(s);
+ editDimension(s,'officeWidth',4.5,'user-estimate');validateState(s);const after=geometry(s);
+ for(const id of ['children','bedroom','ensuite','bath','lobby','courtyard','kitchen','reception','balcony','stairs'])assert.deepEqual(after.rooms.find(r=>r.id===id).poly,before.rooms.find(r=>r.id===id).poly);
+ const previous=before.walls.find(w=>w.id==='office-return'),current=after.walls.find(w=>w.id==='office-return');assert.deepEqual(current,previous);near(after.bands.L-before.bands.L,.9);near(after.bands.X,before.bands.X);near(after.bands.R,before.bands.R);near(after.usableArea,before.usableArea);near(after.rooms.find(r=>r.id==='office').area-before.rooms.find(r=>r.id==='office').area,.9*3.27);near(after.rooms.find(r=>r.id==='hall').area,6.5795);
+});
 test('room polygons use the latest survey, including reception segments and lobby',()=>{
  const s=initialState(),g=geometry(s),room=id=>g.rooms.find(r=>r.id===id);validateState(s);
- for(const [id,expected]of Object.entries({children:[4.6,3.6],bedroom:[4.2,3.6],office:[3.6,4.7],bath:[2.12,2.8],lobby:[2.26,1.37],kitchen:[3.25,3.25]}))sizes(room(id)).forEach((v,i)=>near(v,expected[i]));
+ for(const [id,expected]of Object.entries({children:[4.6,3.6],bedroom:[4.2,3.6],office:[4.5,4.7],bath:[2.12,2.8],lobby:[2.26,1.37],kitchen:[3.25,3.25]}))sizes(room(id)).forEach((v,i)=>near(v,expected[i]));
  const reception=room('reception');near(sizes(reception)[1],5.82);near(reception.poly[4][0]-reception.poly[5][0],3.5);near(reception.poly[4][1]-reception.poly[3][1],1.2);near(g.ceiling,3.1);near(g.usableArea,112.2247);
- near(room('office').area,3.6*4.7-.25*1.43);near(room('lobby').area,2.26*1.37);
+ near(room('office').area,4.5*4.7-1.15*1.43);near(room('lobby').area,2.26*1.37);
  near(Math.max(...room('courtyard').poly.map(p=>p[1])),Math.min(...room('kitchen').poly.map(p=>p[1])));
  assert.equal(s.measurementRevision,measurementRevision);
 });
