@@ -10,3 +10,5 @@
 @media print{.print-layout{grid-template-columns:1fr 1.1fr}.print-columns{display:grid;grid-template-columns:1fr 1fr;gap:4mm}.print-details table{font-size:7.5pt;line-height:1.4}.print-details th,.print-details td{padding:1.1mm 0}.print-columns table{font-size:7pt}.print-columns h2{font-size:10pt}.print-details h2{margin:3mm 0 1.5mm}.print-details p{font-size:8pt;line-height:1.6}.print-meta{font-size:9pt}}
 
 .measurement-notice{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 12px;border:1px solid #cddfe8;border-radius:8px;background:#e7f0f5;color:#24495f;font-size:11px}.measurement-notice strong,.measurement-notice span{display:block}.measurement-notice span{color:#567181;font-size:10px}.measurement-notice.outdated{background:#fff2df;border-color:#deb988}.measurement-notice button{flex-shrink:0;font-size:10px}@media(max-width:640px){.measurement-notice{flex-wrap:wrap}}@media print{.measurement-notice{display:none}}
+
+.survey-conflict{color:#91470b!important;background:#fff3df;border-radius:6px;padding:7px 9px;line-height:1.7}

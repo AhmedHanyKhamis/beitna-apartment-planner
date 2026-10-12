@@ -2,3 +2,4 @@
 import './model.test.js';
 import './measurement-audit.test.js';
 import './realistic-sizes.test.js';
+import './survey-profile.test.js';

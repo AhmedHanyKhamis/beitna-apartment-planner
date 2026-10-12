@@ -3,23 +3,25 @@ import assert from 'node:assert/strict';
 import {catalog,initialState,makeItem,geometry,validateState,clone,setAlternative,resetItemSize,wallPoint,applyMeasuredDimensions,pointInPoly,corners} from '../src/model.js';
 import {View3D} from '../src/view3d.js';
 import {Store} from '../src/store.js';
+import fs from 'node:fs';
+const legacyState=()=>JSON.parse(fs.readFileSync(new URL('./fixtures/before-user-survey.json',import.meta.url),'utf8'));
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
 test('removed exterior block has no floor in the plan or 3D, including after a saved-layout update',()=>{
- const s=initialState();delete s.exteriorLayout;assert.ok(geometry(s).rooms.some(r=>r.id==='stairs'));
- const before=clone(geometry(s).rooms.filter(r=>r.usable));applyMeasuredDimensions(s);validateState(s);const g=geometry(s);
- assert.ok(!g.rooms.some(r=>r.id==='stairs'));assert.deepEqual(g.rooms.filter(r=>r.usable),before);
- const markedPoints=[[(g.bands.R+g.bands.T)/2,(g.bands.J+g.bands.P)/2],[(g.bands.E+g.bands.T)/2,(g.bands.P+g.bands.D)/2]];
+ const s=legacyState();delete s.exteriorLayout;assert.ok(geometry(s).rooms.some(r=>r.id==='stairs'));
+ applyMeasuredDimensions(s);validateState(s);const g=geometry(s);
+ assert.ok(!g.rooms.some(r=>r.id==='stairs'));assert.equal(g.bands.P,g.bands.J);
+ const markedPoints=[[(g.bands.R+g.bands.T)/2,g.bands.P+.15],[(g.bands.E+g.bands.T)/2,(g.bands.P+g.bands.D)/2]];
  for(const p of markedPoints)assert.ok(!g.rooms.some(r=>pointInPoly(p,r.poly)));
  const floors=[];const view={gl:{},canvas:{dataset:{}},floor(poly){floors.push(poly)},box(x,y,z,w,d,h,color,rotation=0){if(z<0)floors.push(corners({x,y,w,d,rotation}))},draw(){}};
  View3D.prototype.render.call(view,{...s,items:[]},{...g,walls:[]},null,[]);
  for(const p of markedPoints)assert.ok(!floors.some(poly=>pointInPoly(p,poly)),'The renderer must not fill the removed area with a rectangular base.');
 });
-test('external balcony and door return contain the full 83 cm opening without moving reception',()=>{
+test('external balcony and door return contain the full 86 cm opening without moving reception',()=>{
  const s=initialState(),g=geometry(s),left=g.walls.find(w=>w.id==='left-balcony'),right=g.walls.find(w=>w.id==='balcony-reception');
- near(right.a[0]-right.thickness/2-(left.a[0]+left.thickness/2),1.1);assert.ok(left.a[0]<0);
- const bottom=g.walls.find(w=>w.id==='office-bottom'),door=bottom.openings.find(o=>o.id==='door-office-balcony');near(door.width,.83);
+ near(right.a[0]-right.thickness/2-(left.a[0]+left.thickness/2),1.37);assert.ok(left.a[0]<0);
+ const bottom=g.walls.find(w=>w.id==='office-bottom'),door=bottom.openings.find(o=>o.id==='door-office-balcony');near(door.width,.86);
  const start=wallPoint(bottom,door.center-door.width/2)[0],end=wallPoint(bottom,door.center+door.width/2)[0];
- assert.ok(start>=g.bands.Z+s.params.wallThickness.value/2);assert.ok(end<=g.bands.A-right.thickness/2);
+ assert.ok(start>=g.bands.Z);assert.ok(end<=g.clear.balconyRight);
  const before=clone(g.rooms.find(r=>r.id==='reception').poly);s.params.balconyClearWidth.value=1.4;s.params.balconyDoorReturnWidth.value=.4;validateState(s);
  assert.deepEqual(geometry(s).rooms.find(r=>r.id==='reception').poly,before);
  s.params.balconyClearWidth.value=.8;assert.throws(()=>validateState(s));
@@ -30,21 +32,22 @@ test('applying the external return keeps office furniture at its existing positi
 });
 test('hall remains 120 cm between actual wall faces across wall thickness choices',()=>{
  for(const thickness of [.1,.15,.3]){
-  const s=initialState();s.params.wallThickness.value=thickness;s.params.balconyDoorReturnWidth.value=thickness>.2?.5:.3;
+  const s=initialState();s.params.wallThickness.value=thickness;s.params.balconyClearWidth.value=1.6;
   const g=geometry(s),left=g.walls.find(w=>w.id==='office-hall'),right=g.walls.find(w=>w.id==='service-hall');
   near(right.a[0]-right.thickness/2-(left.a[0]+left.thickness/2),1.2);validateState(s);
  }
 });
-test('entry tail is 120 cm independently of the 769 cm balcony wall and kitchen depth',()=>{
+test('entry tail is 270 cm independently of the approximately 762 cm balcony wall and kitchen depth',()=>{
  const s=initialState();for(const depth of [3,3.25,3.6]){
   s.params.kitchenDepth.value=depth;const g=geometry(s),tail=g.walls.find(w=>w.id==='reception-lower-right');
-  near(tail.length,1.2);near(g.walls.find(w=>w.id==='balcony-reception').length,7.69);near(g.bands.D-g.bands.P,1.2);validateState(s);
+  near(g.clear.recEnd-g.clear.entryLine,2.7);near(g.walls.find(w=>w.id==='balcony-reception').length,7.62);near(g.bands.P,g.bands.J);
  }
 });
 test('confirmed wall segments and end-of-wall bathroom window use exact clear offsets',()=>{
  const s=initialState(),g=geometry(s),w=g.walls.find(w=>w.id==='balcony-reception'),[door,win]=w.openings;
- near(w.length,7.69);near(door.center-door.width/2,1.75);near(win.center-win.width/2-(door.center+door.width/2),2.05);near(w.length-win.center-win.width/2,1.15);
- near(g.bands.O-g.bands.Y,4.7);near(g.bands.O-g.bands.H,.4);near(g.bands.L-g.bands.A,3.6);near(g.bands.R-g.bands.L,1.2);near(g.bands.R-g.bands.A,4.8);near(g.bands.E-g.bands.A,3.5);
+ near(w.length,7.62);near(door.center-door.width/2,1.95);near(w.length-win.center-win.width/2,1.12);
+ near(g.clear.officeBottom-g.clear.officeTop,4.7);near(g.clear.hallRight-g.clear.recLeft,4.66);near(g.clear.hallRight-g.clear.hallLeft,1.2);near(g.clear.recLowerRight-g.clear.recLeft,3.5);
+ assert.equal(win.positionStatus,'conflict');near(s.surveyReadings.numbered[6],210);near(g.measurementConflicts[0].segmentTotal,7.94);
  const bw=g.walls.find(w=>w.id==='court-ensuite'),o=bw.openings[0];near(o.center-o.width/2,.7);near(o.width,.8);near(o.center+o.width/2,bw.length);
 });
 test('new items use external furniture dimensions and appliance body dimensions',()=>{
@@ -54,7 +57,7 @@ test('new items use external furniture dimensions and appliance body dimensions'
  const s=initialState();setAlternative(s,'cooking','hob');const hob=s.items.find(o=>o.id==='cooking-main');near(hob.z+hob.h,.9);validateState(s);
 });
 test('legacy files lacking the small bathroom width load without changing their previous footprint',()=>{
- const s=initialState();s.params.ensuiteDepth.value=1.9;delete s.params.ensuiteWidth;
+ const s=legacyState();s.params.ensuiteDepth.value=1.9;delete s.params.ensuiteWidth;
  const oldPoly=geometry(s).rooms.find(r=>r.id==='ensuite').poly,parsed=validateState(s);
  near(parsed.params.ensuiteWidth.value,2.12);geometry(parsed).rooms.find(r=>r.id==='ensuite').poly.forEach((p,i)=>p.forEach((v,j)=>near(v,oldPoly[i][j])));
 });

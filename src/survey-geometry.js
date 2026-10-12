@@ -4,7 +4,7 @@ export function geometrySurvey(s){
  const p=Object.fromEntries(Object.entries(s.params).map(([k,v])=>[k,v.value])),t=p.wallThickness,e=p.exteriorWallThickness;
  const childRight=p.leftWidth,bedLeft=childRight+t,bedRight=bedLeft+p.bedroomWidth,bedBottom=p.bedroomDepth;
  const officeTop=bedBottom+t,officeBottom=officeTop+p.officeDepth,officeRight=p.officeWidth;
- const hallLeft=officeRight+t,hallRight=hallLeft+p.hallWidth,serviceThickness=p.serviceWallThickness,serviceLeft=hallRight+serviceThickness;
+ const hallLeft=officeRight+t,hallRight=hallLeft+p.hallWidth,serviceThickness=t,serviceLeft=hallRight+serviceThickness;
  const recStart=officeBottom+t,recEnd=recStart+p.receptionLength,entryLine=recStart+p.receptionEntryOffset;
  const recLeft=hallRight-p.receptionUpperWidth,recLowerRight=recLeft+p.receptionWidth;
  const balconyRight=recLeft-t,balconyLeft=balconyRight-p.balconyClearWidth;
@@ -61,12 +61,12 @@ export function geometrySurvey(s){
  wall('left-balcony',[F,recStart],[F,recEnd],e);
  wall('balcony-bottom',[F,D],[A,D],e);
  wall('balcony-reception',[A,recStart],[A,recEnd],t,[door('door-balcony',(1.95+.61)/p.receptionLength,1.22,1),win('window-reception',(p.receptionLength-1.12-.775)/p.receptionLength,1.55)]);
- const recWall=walls.at(-1);for(const o of recWall.openings)o.positionStatus='conflict';
+ const recWall=walls.at(-1);for(const o of recWall.openings)if(o.id==='window-reception')o.positionStatus='conflict';
  wall('service-hall',[R,ensuiteTop],[R,lobbyBottom],serviceThickness,[{...door('passage-lobby',((lobbyTop+lobbyBottom)/2-ensuiteTop)/(lobbyBottom-ensuiteTop),.85),type:'passage'}]);
  wall('bath-divider',[R,S],[B,S],t);
  wall('bath-bottom',[R,H],[B,H],t);
  // Main bathroom access is on its hall-side wall; place it on that segment.
- const service=walls.find(w=>w.id==='service-hall');const bathDoor=door('door-bath',(7.75-ensuiteTop)/(lobbyBottom-ensuiteTop),.9,-1);
+ const service=walls.find(w=>w.id==='service-hall');const bathDoor=door('door-bath',(bathBottom-.73-ensuiteTop)/(lobbyBottom-ensuiteTop),.9,-1);
  const q={...bathDoor,...s.openingOverrides['door-bath']};q.center=q.anchor*service.length;service.openings.push(q);
  wall('court-ensuite',[Q,ensuiteTop],[Q,ensuiteBottom],e,[win('window-ensuite',1.1/p.ensuiteDepth,.8)]);
  wall('court-bath',[B,bathTop],[B,bathBottom],e,[win('window-bath',.5,.82)]);
@@ -80,5 +80,5 @@ export function geometrySurvey(s){
  wall('reception-lower-right',[E,P],[E,D],e);
  wall('reception-bottom',[A,D],[E,D],e);
  const minX=F-e/2,maxX=T+e/2,minY=-e,maxY=D+e/2;
- return {rooms,walls,minX,maxX,minY,maxY,width:maxX-minX,depth:maxY-minY,ceiling:p.ceilingHeight,usableArea:rooms.filter(r=>r.usable).reduce((sum,r)=>sum+r.area,0),bands:{C,L,R,T,B,Q,V,Y,N,S,H,K,J,P,O,D,A,E,X,F,Z,G},clear:{hallLeft,hallRight,officeTop,officeBottom,officeRight,recStart,recEnd,entryLine,recLeft,recLowerRight,balconyLeft,balconyRight,serviceLeft,bedroomServiceThickness},measurementConflicts:[{id:'reception-opening-chain',reportedTotal:6,segmentTotal:7.94,reportedMiddleGap:2.10,displayedMiddleGap:.16,affectedOpenings:['window-reception'],message:'طول الحائط المقاس 600 سم، ومجموع الأجزاء 794 سم. موضع شباك الريسبشن مؤقت؛ مقاس 210 سم محفوظ ويحتاج توفيقًا مع الطول الكلي.'}]};
+ return {rooms,walls,minX,maxX,minY,maxY,width:maxX-minX,depth:maxY-minY,ceiling:p.ceilingHeight,usableArea:rooms.filter(r=>r.usable).reduce((sum,r)=>sum+r.area,0),bands:{C,L,R,T,B,Q,V,Y,N,S,H,K,J,P,O,D,A,E,X,F,Z,G},clear:{hallLeft,hallRight,officeTop,officeBottom,officeRight,recStart,recEnd,entryLine,recLeft,recLowerRight,balconyLeft,balconyRight,serviceLeft,bedroomServiceThickness},measurementConflicts:[{id:'reception-opening-chain',reportedTotal:p.receptionLength,segmentTotal:7.94,reportedMiddleGap:2.10,displayedMiddleGap:recWall.openings[1].center-recWall.openings[1].width/2-recWall.openings[0].center-recWall.openings[0].width/2,affectedOpenings:['window-reception'],message:`طول الحائط الحالي حوالي ${Math.round(p.receptionLength*100)} سم، ومجموع الأجزاء المسجلة 794 سم. موضع شباك الريسبشن مؤقت؛ مقاس 210 سم محفوظ. من المكتب للمدخل ${Math.round(p.receptionEntryOffset*100)} سم محسوبة من الطول والجزء الأخير، مقابل 480 سم في التسجيل السابق.`}]};
 }
