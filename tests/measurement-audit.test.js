@@ -17,7 +17,7 @@ test('red-line correction moves only the lower office wall and conserves the flo
 test('room polygons use the latest survey, including reception segments and lobby',()=>{
  const s=initialState(),g=geometry(s),room=id=>g.rooms.find(r=>r.id===id);validateState(s);
  for(const [id,expected]of Object.entries({children:[4.6,3.6],bedroom:[4.2,3.6],office:[4.7,4.7],ensuite:[2.1,1.5],bath:[2.12,2.8],lobby:[2.26,1.37],kitchen:[3.25,3.25]}))sizes(room(id)).forEach((v,i)=>near(v,expected[i]));
- const reception=room('reception');near(g.clear.recEnd-g.clear.recStart,7.62);near(reception.poly.at(-2)[0]-reception.poly.at(-1)[0],3.5);near(reception.poly.at(-2)[1]-reception.poly.at(-3)[1],2.7);near(g.ceiling,3.1);near(g.usableArea,123.6885);
+ const reception=room('reception');near(g.clear.recEnd-g.clear.recStart,7.94);near(reception.poly.at(-2)[0]-reception.poly.at(-1)[0],3.5);near(reception.poly.at(-2)[1]-reception.poly.at(-3)[1],2.7);near(g.ceiling,3.1);near(g.usableArea,125.6181);
  near(room('office').area,4.4*4.7-1.08*1.35+.3*.3);near(room('lobby').area,2.26*1.37);
  near(Math.min(...room('kitchen').poly.map(p=>p[1]))-Math.max(...room('courtyard').poly.map(p=>p[1])),.31);
  assert.equal(s.measurementRevision,measurementRevision);
@@ -32,7 +32,7 @@ test('all nine doors and eight windows retain the measured widths and heights wi
 test('a previous measured revision updates every corrected length and ceiling while retaining furniture',()=>{
  const s=legacyState();s.measurementRevision='2026-10-08-measured-01';s.params.lobbyDepth={value:.8,status:'measured'};s.params.lobbyWidth={value:2.12,status:'derived'};s.params.receptionTail={value:4.2,status:'user-estimate'};s.params.receptionWidth={value:2.5,status:'user-estimate'};s.params.balconyWidth={value:.75,status:'user-estimate'};s.params.ceilingHeight={value:2.9,status:'measured'};
  s.openingOverrides['door-bedroom']={width:.85,height:2.1,anchor:.12,swing:1,hinge:1};const items=clone(s.items);
- applyMeasuredDimensions(s);validateState(s);const g=geometry(s);near(g.clear.recEnd-g.clear.recStart,7.62);near(s.params.lobbyWidth.value,2.26);near(s.params.lobbyDepth.value,1.37);near(g.ceiling,3.1);
+ applyMeasuredDimensions(s);validateState(s);const g=geometry(s);near(g.clear.recEnd-g.clear.recStart,7.94);near(s.params.lobbyWidth.value,2.26);near(s.params.lobbyDepth.value,1.37);near(g.ceiling,3.1);
  assert.deepEqual(s.items.map(o=>[o.id,o.type,o.w,o.d,o.h,o.rotation]),items.map(o=>[o.id,o.type,o.w,o.d,o.h,o.rotation]));near(s.openingOverrides['door-bedroom'].width,.95);near(s.openingOverrides['door-bedroom'].anchor,.12);assert.equal(s.openingOverrides['door-bedroom'].hinge,1);
 });
 test('measurement update persists, preserves named old designs, and undo restores their previous geometry',()=>{

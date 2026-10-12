@@ -37,17 +37,17 @@ test('hall remains 120 cm between actual wall faces across wall thickness choice
   near(right.a[0]-right.thickness/2-(left.a[0]+left.thickness/2),1.2);validateState(s);
  }
 });
-test('entry tail is 270 cm independently of the approximately 762 cm balcony wall and kitchen depth',()=>{
+test('entry tail is 270 cm independently of the 794 cm confirmed balcony wall and kitchen depth',()=>{
  const s=initialState();for(const depth of [3,3.25,3.6]){
   s.params.kitchenDepth.value=depth;const g=geometry(s),tail=g.walls.find(w=>w.id==='reception-lower-right');
-  near(g.clear.recEnd-g.clear.entryLine,2.7);near(g.walls.find(w=>w.id==='balcony-reception').length,7.62);near(g.bands.P,g.bands.J);
+  near(g.clear.recEnd-g.clear.entryLine,2.7);near(g.walls.find(w=>w.id==='balcony-reception').length,7.94);near(g.bands.P,g.bands.J);
  }
 });
 test('confirmed wall segments and end-of-wall bathroom window use exact clear offsets',()=>{
  const s=initialState(),g=geometry(s),w=g.walls.find(w=>w.id==='balcony-reception'),[door,win]=w.openings;
- near(w.length,7.62);near(door.center-door.width/2,1.95);near(w.length-win.center-win.width/2,1.12);
+ near(w.length,7.94);near(door.center-door.width/2,1.95);near(w.length-win.center-win.width/2,1.12);
  near(g.clear.officeBottom-g.clear.officeTop,4.7);near(g.clear.hallRight-g.clear.recLeft,4.66);near(g.clear.hallRight-g.clear.hallLeft,1.2);near(g.clear.recLowerRight-g.clear.recLeft,3.5);
- assert.equal(win.positionStatus,'conflict');near(s.surveyReadings.numbered[6],210);near(g.measurementConflicts[0].segmentTotal,7.94);
+ assert.equal(win.positionStatus,undefined);near(s.surveyReadings.numbered[6],210);assert.deepEqual(g.measurementConflicts,[]);
  const bw=g.walls.find(w=>w.id==='court-ensuite'),o=bw.openings[0];near(o.center-o.width/2,.7);near(o.width,.8);near(o.center+o.width/2,bw.length);
 });
 test('new items use external furniture dimensions and appliance body dimensions',()=>{

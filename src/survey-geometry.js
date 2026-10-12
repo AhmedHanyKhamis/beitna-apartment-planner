@@ -61,18 +61,22 @@ export function geometrySurvey(s){
  wall('left-balcony',[F,recStart],[F,recEnd],e);
  wall('balcony-bottom',[F,D],[A,D],e);
  wall('balcony-reception',[A,recStart],[A,recEnd],t,[door('door-balcony',(1.95+.61)/p.receptionLength,1.22,1),win('window-reception',(p.receptionLength-1.12-.775)/p.receptionLength,1.55)]);
- const recWall=walls.at(-1);for(const o of recWall.openings)if(o.id==='window-reception')o.positionStatus='conflict';
+ const recWall=walls.at(-1),recDoor=recWall.openings[0],recWindow=recWall.openings[1];
+ const chainMatches=Math.abs(recWall.length-7.94)<.001&&Math.abs(recDoor.center-recDoor.width/2-1.95)<.001&&Math.abs(recWindow.center-recWindow.width/2-recDoor.center-recDoor.width/2-2.10)<.001&&Math.abs(recWall.length-recWindow.center-recWindow.width/2-1.12)<.001;
+ if(!chainMatches)recWindow.positionStatus='conflict';
  wall('service-hall',[R,ensuiteTop],[R,lobbyBottom],serviceThickness,[{...door('passage-lobby',((lobbyTop+lobbyBottom)/2-ensuiteTop)/(lobbyBottom-ensuiteTop),.85),type:'passage'}]);
  wall('bath-divider',[R,S],[B,S],t);
  wall('bath-bottom',[R,H],[B,H],t);
- // Main bathroom access is on its hall-side wall; place it on that segment.
- const service=walls.find(w=>w.id==='service-hall');const bathDoor=door('door-bath',(bathBottom-.73-ensuiteTop)/(lobbyBottom-ensuiteTop),.9,-1);
- const q={...bathDoor,...s.openingOverrides['door-bath']};q.center=q.anchor*service.length;service.openings.push(q);
  wall('court-ensuite',[Q,ensuiteTop],[Q,ensuiteBottom],e,[win('window-ensuite',1.1/p.ensuiteDepth,.8)]);
  wall('court-bath',[B,bathTop],[B,bathBottom],e,[win('window-bath',.5,.82)]);
  wall('court-lobby',[V,lobbyTop],[V,lobbyBottom],e,[win('window-lobby',.5,1.02)]);
  wall('lobby-bath-return',[B,H],[V,H],t);
  wall('kitchen-top',[R,K],[T,K],t,[door('door-kitchen',.24,.93,1),win('window-kitchen',.84,.95)]);
+ // The two doors face each other across the small lobby, as confirmed by the user.
+ const kitchenWall=walls.find(w=>w.id==='kitchen-top'),kitchenDoor=kitchenWall.openings.find(o=>o.id==='door-kitchen'),kitchenDoorX=kitchenWall.a[0]+kitchenDoor.center;
+ const bathWall=walls.find(w=>w.id==='bath-bottom'),bathBase=door('door-bath',(kitchenDoorX-bathWall.a[0])/bathWall.length,.9,-1),bathOpening={...bathBase,...s.openingOverrides['door-bath']};
+ if(bathOpening.width>bathWall.length)throw Error('فتحة الحمام أكبر من الحائط المتاح.');
+ bathOpening.center=Math.max(bathOpening.width/2,Math.min(bathWall.length-bathOpening.width/2,bathOpening.anchor*bathWall.length));bathWall.openings.push(bathOpening);
  wall('kitchen-left',[R,kitchenTop],[R,kitchenBottom],serviceThickness);
  wall('kitchen-right',[T,kitchenTop],[T,kitchenBottom],e);
  wall('kitchen-bottom',[R,P+e/2],[T,P+e/2],e);
@@ -80,5 +84,5 @@ export function geometrySurvey(s){
  wall('reception-lower-right',[E,P],[E,D],e);
  wall('reception-bottom',[A,D],[E,D],e);
  const minX=F-e/2,maxX=T+e/2,minY=-e,maxY=D+e/2;
- return {rooms,walls,minX,maxX,minY,maxY,width:maxX-minX,depth:maxY-minY,ceiling:p.ceilingHeight,usableArea:rooms.filter(r=>r.usable).reduce((sum,r)=>sum+r.area,0),bands:{C,L,R,T,B,Q,V,Y,N,S,H,K,J,P,O,D,A,E,X,F,Z,G},clear:{hallLeft,hallRight,officeTop,officeBottom,officeRight,recStart,recEnd,entryLine,recLeft,recLowerRight,balconyLeft,balconyRight,serviceLeft,bedroomServiceThickness},measurementConflicts:[{id:'reception-opening-chain',reportedTotal:p.receptionLength,segmentTotal:7.94,reportedMiddleGap:2.10,displayedMiddleGap:recWall.openings[1].center-recWall.openings[1].width/2-recWall.openings[0].center-recWall.openings[0].width/2,affectedOpenings:['window-reception'],message:`طول الحائط الحالي حوالي ${Math.round(p.receptionLength*100)} سم، ومجموع الأجزاء المسجلة 794 سم. موضع شباك الريسبشن مؤقت؛ مقاس 210 سم محفوظ. من المكتب للمدخل ${Math.round(p.receptionEntryOffset*100)} سم محسوبة من الطول والجزء الأخير، مقابل 480 سم في التسجيل السابق.`}]};
+ return {rooms,walls,minX,maxX,minY,maxY,width:maxX-minX,depth:maxY-minY,ceiling:p.ceilingHeight,usableArea:rooms.filter(r=>r.usable).reduce((sum,r)=>sum+r.area,0),bands:{C,L,R,T,B,Q,V,Y,N,S,H,K,J,P,O,D,A,E,X,F,Z,G},clear:{hallLeft,hallRight,officeTop,officeBottom,officeRight,recStart,recEnd,entryLine,recLeft,recLowerRight,balconyLeft,balconyRight,serviceLeft,bedroomServiceThickness},measurementConflicts:chainMatches?[]:[{id:'reception-opening-chain',reportedTotal:p.receptionLength,segmentTotal:7.94,reportedMiddleGap:2.10,displayedMiddleGap:recWall.openings[1].center-recWall.openings[1].width/2-recWall.openings[0].center-recWall.openings[0].width/2,affectedOpenings:['window-reception'],message:`طول الحائط الحالي ${Math.round(p.receptionLength*100)} سم، ومجموع الأجزاء المسجلة 794 سم. موضع شباك الريسبشن مؤقت؛ مقاس 210 سم محفوظ. من المكتب للمدخل ${Math.round(p.receptionEntryOffset*100)} سم محسوبة من الطول والجزء الأخير، مقابل 480 سم في التسجيل السابق.`}]};
 }
