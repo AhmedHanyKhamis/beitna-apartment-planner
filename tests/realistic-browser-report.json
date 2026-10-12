@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checks": [
+    "library sizes in centimetres",
+    "add actual frame size",
+    "reset one size",
+    "undo and redo",
+    "save and reload",
+    "thin hob alternative",
+    "2D/3D dimensions synchronized",
+    "no browser errors"
+  ]
+}
