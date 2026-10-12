@@ -1,7 +1,7 @@
 // Latest survey: مقاسات.jpg, with the user's subsequent corrections in cm.
 // "derived" means calculated from confirmed lengths using the approved topology.
 // Photo readings and assumptions remain estimates until individually confirmed.
-export const measurementRevision='2026-10-12-balcony-07';
+export const measurementRevision='2026-10-12-outline-08';
 export const measurementStatus={
  leftWidth:'measured',officeDepth:'measured',officeWidth:'derived',officeNotchWidth:'user-estimate',hallWidth:'measured',
  kitchenWidth:'measured',courtyardWidth:'derived',bedroomDepth:'measured',
@@ -10,7 +10,7 @@ export const measurementStatus={
  balconyWidth:'derived',balconyClearWidth:'user-estimate',balconyDoorReturnWidth:'user-estimate',balconyDoorReturnDepth:'user-estimate',entryReturn:'user-estimate',wallThickness:'assistant-estimate',
  ceilingHeight:'measured',grossArea:'user-estimate'
 };
-export const measurementNotes='تصحيح 12 أكتوبر: طرقة الأوض عرضها 1.20 م صافي بين وجهي الحائطين، وسماكة الحيطان لا تُخصم منه. الحمام الصغير 2.10 م عرض × 1.50 م طول، شباكه 0.80 م بعد 0.70 م من حائط النوم حتى نهاية الحائط. حائط الريسبشن: 1.75 م حائط + 1.20 م باب بلكونة + 2.05 م حائط + 1.54 م شباك + 1.15 م حائط = 7.69 م. عرض الجزء الضيق من الريسبشن 3.50 م، ويتسع أمام باب الشقة حتى حائط المطبخ؛ 3.60 م حتى بداية الطرقة + 1.20 م طرقة = 4.80 م للجزء الواسع. عرض المكتب بعد الركنة محسوب 4.35 م للحفاظ على حد الخدمات السابق؛ موضع حائط البلكونة مع الريسبشن 0.75 م من المحاذاة؛ البلكونة بارزة للخارج وفيه ردة عند باب المكتب حسب المستخدم. عرضها الصافي 1.10 م، والردة 0.30 × 0.30 م كمقاسات مبدئية قابلة للتعديل وليست قياسًا مباشرًا؛ طول المكتب 4.70 م مؤكد، ونهايته بعد نهاية الحمام الكبير 0.40 م. الجزء من ركنة باب الشقة للنهاية 1.20 م مستقل عن طول حائط البلكونة 7.69 م. جانب الغسالة ليس مسار مرور حسب المستخدم. عمق ركنة المكتب وأبعاد البروز والردة يحتاجان قياسًا مباشرًا. سماكات الحيطان واتجاه الفتح وجلسات الشبابيك تقديرية.';
+export const measurementNotes='تصحيح 12 أكتوبر: طرقة الأوض عرضها 1.20 م صافي بين وجهي الحائطين، وسماكة الحيطان لا تُخصم منه. الحمام الصغير 2.10 م عرض × 1.50 م طول، شباكه 0.80 م بعد 0.70 م من حائط النوم حتى نهاية الحائط. حائط الريسبشن: 1.75 م حائط + 1.20 م باب بلكونة + 2.05 م حائط + 1.54 م شباك + 1.15 م حائط = 7.69 م. عرض الجزء الضيق من الريسبشن 3.50 م، ويتسع أمام باب الشقة حتى حائط المطبخ؛ 3.60 م حتى بداية الطرقة + 1.20 م طرقة = 4.80 م للجزء الواسع. عرض المكتب بعد الركنة محسوب 4.35 م للحفاظ على حد الخدمات السابق؛ موضع حائط البلكونة مع الريسبشن 0.75 م من المحاذاة؛ البلكونة بارزة للخارج وفيه ردة عند باب المكتب حسب المستخدم. عرضها الصافي 1.10 م، والردة 0.30 × 0.30 م كمقاسات مبدئية قابلة للتعديل وليست قياسًا مباشرًا؛ طول المكتب 4.70 م مؤكد، ونهايته بعد نهاية الحمام الكبير 0.40 م. الجزء من ركنة باب الشقة للنهاية 1.20 م مستقل عن طول حائط البلكونة 7.69 م. جانب الغسالة ليس مسار مرور حسب المستخدم. عمق ركنة المكتب وأبعاد البروز والردة يحتاجان قياسًا مباشرًا. المساحة الخارجية المضافة تحت المطبخ حُذفت حسب تصحيح المستخدم؛ خارج حدود الشقة غير مرسوم لعدم وجود قياسات معتمدة له. سماكات الحيطان واتجاه الفتح وجلسات الشبابيك تقديرية.';
 export const measurementOpenings={
  'door-entry':{width:1.05,height:2.30,status:'measured'},
  'door-office':{width:.93,height:2.30,status:'measured'},

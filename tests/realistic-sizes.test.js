@@ -1,9 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {catalog,initialState,makeItem,geometry,validateState,clone,setAlternative,resetItemSize,wallPoint,applyMeasuredDimensions} from '../src/model.js';
+import {catalog,initialState,makeItem,geometry,validateState,clone,setAlternative,resetItemSize,wallPoint,applyMeasuredDimensions,pointInPoly,corners} from '../src/model.js';
 import {View3D} from '../src/view3d.js';
 import {Store} from '../src/store.js';
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
+test('removed exterior block has no floor in the plan or 3D, including after a saved-layout update',()=>{
+ const s=initialState();delete s.exteriorLayout;assert.ok(geometry(s).rooms.some(r=>r.id==='stairs'));
+ const before=clone(geometry(s).rooms.filter(r=>r.usable));applyMeasuredDimensions(s);validateState(s);const g=geometry(s);
+ assert.ok(!g.rooms.some(r=>r.id==='stairs'));assert.deepEqual(g.rooms.filter(r=>r.usable),before);
+ const markedPoints=[[(g.bands.R+g.bands.T)/2,(g.bands.J+g.bands.P)/2],[(g.bands.E+g.bands.T)/2,(g.bands.P+g.bands.D)/2]];
+ for(const p of markedPoints)assert.ok(!g.rooms.some(r=>pointInPoly(p,r.poly)));
+ const floors=[];const view={gl:{},canvas:{dataset:{}},floor(poly){floors.push(poly)},box(x,y,z,w,d,h,color,rotation=0){if(z<0)floors.push(corners({x,y,w,d,rotation}))},draw(){}};
+ View3D.prototype.render.call(view,{...s,items:[]},{...g,walls:[]},null,[]);
+ for(const p of markedPoints)assert.ok(!floors.some(poly=>pointInPoly(p,poly)),'The renderer must not fill the removed area with a rectangular base.');
+});
 test('external balcony and door return contain the full 83 cm opening without moving reception',()=>{
  const s=initialState(),g=geometry(s),left=g.walls.find(w=>w.id==='left-balcony'),right=g.walls.find(w=>w.id==='balcony-reception');
  near(right.a[0]-right.thickness/2-(left.a[0]+left.thickness/2),1.1);assert.ok(left.a[0]<0);
@@ -59,7 +69,7 @@ test('3D bed headboard stays inside the metric footprint and reaches the declare
   const o=makeItem(type,0,0,{h:height}),boxes=[];
   const view={gl:{},canvas:{dataset:{}},box(...args){boxes.push(args)},draw(){},opaque:[],transparent:[]};
   View3D.prototype.render.call(view,{items:[o],servicePoints:[]},{width:10,depth:10,ceiling:3.1,rooms:[],walls:[]},null,[]);
-  const parts=boxes.slice(1);for(const [x,y,z,w,d,h] of parts){assert.ok(Math.abs(x)+w/2<=o.w/2+1e-8);assert.ok(Math.abs(y)+d/2<=o.d/2+1e-8);assert.ok(z+h<=o.h+1e-8);assert.ok(h>0);}
+  const parts=boxes;for(const [x,y,z,w,d,h] of parts){assert.ok(Math.abs(x)+w/2<=o.w/2+1e-8);assert.ok(Math.abs(y)+d/2<=o.d/2+1e-8);assert.ok(z+h<=o.h+1e-8);assert.ok(h>0);}
   near(Math.max(...parts.map(b=>b[2]+b[5])),height);
  }
 });

@@ -1,0 +1,84 @@
+// Clear room faces, rather than wall centre lines, define the latest survey.
+// Unmeasured wall connections are derived and explicitly reported as such.
+export function geometrySurvey(s){
+ const p=Object.fromEntries(Object.entries(s.params).map(([k,v])=>[k,v.value])),t=p.wallThickness,e=p.exteriorWallThickness;
+ const childRight=p.leftWidth,bedLeft=childRight+t,bedRight=bedLeft+p.bedroomWidth,bedBottom=p.bedroomDepth;
+ const officeTop=bedBottom+t,officeBottom=officeTop+p.officeDepth,officeRight=p.officeWidth;
+ const hallLeft=officeRight+t,hallRight=hallLeft+p.hallWidth,serviceThickness=p.serviceWallThickness,serviceLeft=hallRight+serviceThickness;
+ const recStart=officeBottom+t,recEnd=recStart+p.receptionLength,entryLine=recStart+p.receptionEntryOffset;
+ const recLeft=hallRight-p.receptionUpperWidth,recLowerRight=recLeft+p.receptionWidth;
+ const balconyRight=recLeft-t,balconyLeft=balconyRight-p.balconyClearWidth;
+ const notchLeft=officeRight-p.officeNotchWidth,notchEnd=officeTop+p.entryReturn,notchTop=notchEnd-t;
+ const kitchenBottom=entryLine,kitchenTop=kitchenBottom-p.kitchenDepth,kitchenRight=serviceLeft+p.kitchenWidth;
+ const lobbyBottom=kitchenTop-t,lobbyTop=lobbyBottom-p.lobbyDepth,lobbyRight=serviceLeft+p.lobbyWidth;
+ const bathBottom=lobbyTop-t,bathTop=bathBottom-p.bathDepth,bathRight=serviceLeft+p.kitchenWidth-p.courtyardWidth;
+ const ensuiteBottom=bathTop-t,ensuiteTop=ensuiteBottom-p.ensuiteDepth,ensuiteRight=serviceLeft+p.ensuiteWidth;
+ const returnLeft=-p.balconyDoorReturnWidth,returnTop=officeBottom-p.balconyDoorReturnDepth;
+ const rooms=[],walls=[],area=poly=>Math.abs(poly.reduce((sum,v,i)=>{const n=poly[(i+1)%poly.length];return sum+v[0]*n[1]-n[0]*v[1];},0)/2);
+ const room=(id,name,poly,color,usable=true)=>rooms.push({id,name,poly,color,usable,area:area(poly)});
+ const rectangle=(id,name,x1,y1,x2,y2,color)=>room(id,name,[[x1,y1],[x2,y1],[x2,y2],[x1,y2]],color);
+ rectangle('children','أوضة الأطفال',0,0,childRight,bedBottom,'#e6edf1');
+ rectangle('bedroom','أوضة النوم',bedLeft,0,bedRight,bedBottom,'#eee8dd');
+ room('office','المكتب',[[0,officeTop],[notchLeft,officeTop],[notchLeft,notchEnd],[officeRight,notchEnd],[officeRight,officeBottom],[returnLeft,officeBottom],[returnLeft,returnTop],[0,returnTop]],'#e6ece6');
+ room('hall','طرقة الأوض',[[notchLeft+t,officeTop],[hallRight,officeTop],[hallRight,recStart],[hallLeft,recStart],[hallLeft,notchTop],[notchLeft+t,notchTop]],'#f0efe8');
+ rectangle('ensuite','حمام النوم',serviceLeft,ensuiteTop,ensuiteRight,ensuiteBottom,'#deedf0');
+ rectangle('bath','الحمام الكبير',serviceLeft,bathTop,bathRight,bathBottom,'#dcebf0');
+ rectangle('lobby','طرقة صغيرة',serviceLeft,lobbyTop,lobbyRight,lobbyBottom,'#e7ece5');
+ rectangle('kitchen','المطبخ',serviceLeft,kitchenTop,kitchenRight,kitchenBottom,'#eae8de');
+ room('courtyard','المنور',[[ensuiteRight+e,ensuiteTop],[kitchenRight,ensuiteTop],[kitchenRight,lobbyBottom],[lobbyRight+e,lobbyBottom],[lobbyRight+e,lobbyTop],[bathRight+e,lobbyTop],[bathRight+e,bathTop],[ensuiteRight+e,bathTop]],'#ccd6d3',false);
+ rectangle('reception','الريسبشن',recLeft,recStart,hallRight,entryLine,'#eee8df');
+ const reception=rooms.at(-1);reception.poly=[[recLeft,recStart],[hallRight,recStart],[hallRight,entryLine],[recLowerRight,entryLine],[recLowerRight,recEnd],[recLeft,recEnd]];reception.area=area(reception.poly);
+ rectangle('balcony','البلكونة',balconyLeft,recStart,balconyRight,recEnd,'#dce6de');
+ const opening=(id,type,anchor,width,swing=1)=>({id,type,anchor,width,swing,hinge:0,height:type==='window'?1.1:2.3,...(type==='window'?{sill:1}:{}),status:'assistant-estimate'});
+ const door=(id,anchor,width,swing=1)=>opening(id,'door',anchor,width,swing),win=(id,anchor,width)=>opening(id,'window',anchor,width);
+ function wall(id,a,b,thickness,open=[]){
+  const length=Math.hypot(b[0]-a[0],b[1]-a[1]);if(length<.001)return;
+  walls.push({id,a,b,length,thickness,openings:open.map(base=>{const q={...base,...s.openingOverrides[base.id]};
+   if(q.width>length+.001)throw Error('فتحة أكبر من الجزء المتاح في الحائط.');
+   q.center=q.anchor*length;q.center=Math.max(q.width/2,Math.min(length-q.width/2,q.center));return q;})});
+ }
+ const C=childRight+t/2,L=officeRight+t/2,R=hallRight+serviceThickness/2,T=kitchenRight+e/2,B=bathRight+e/2,Q=ensuiteRight+e/2,V=lobbyRight+e/2;
+ const Y=bedBottom+t/2,N=notchEnd-t/2,S=bathTop-t/2,H=bathBottom+t/2,K=kitchenTop-t/2,J=entryLine,P=entryLine,O=officeBottom+t/2,D=recEnd+e/2,A=recLeft-t/2,E=recLowerRight+e/2,X=notchLeft+t/2,F=balconyLeft-e/2,Z=returnLeft,G=returnTop;
+ wall('outer-top',[-e/2,-e/2],[bedRight+e/2,-e/2],e);
+ wall('left-children',[-e/2,0],[-e/2,bedBottom],e,[win('window-children',.5,1.6)]);
+ wall('bedroom-split',[C,0],[C,bedBottom],t);
+ wall('children-bottom',[0,Y],[childRight,Y],t,[door('door-children',(notchLeft+t+(childRight-notchLeft-t)/2)/childRight,.9,-1)]);
+ wall('bedroom-bottom-hall',[bedLeft,Y],[hallRight,Y],t,[door('door-bedroom',.5,.95,-1)]);
+ const bedroomServiceThickness=ensuiteTop-bedBottom;
+ wall('bedroom-bottom-service',[serviceLeft,bedBottom+bedroomServiceThickness/2],[ensuiteRight,bedBottom+bedroomServiceThickness/2],bedroomServiceThickness,[door('door-ensuite',.36,.9,1)]);
+ wall('bedroom-bottom-window',[ensuiteRight-.025,Y],[bedRight+.025,Y],t,[win('window-bedroom',.5,.83)]);
+ wall('outer-bedroom',[bedRight+e/2,0],[bedRight+e/2,bedBottom],e);
+ if(kitchenRight>bedRight+e)wall('shaft-top-return',[bedRight+e,ensuiteTop-e/2],[kitchenRight+e/2,ensuiteTop-e/2],e);
+ wall('left-office',[-e/2,officeTop],[-e/2,returnTop],e,[win('window-office',.5,1.54)]);
+ wall('office-return',[X,officeTop],[X,N],t,[door('door-office',.5,.93,-1)]);
+ wall('office-return-bottom',[X,N],[L,N],t);
+ wall('office-hall',[L,N],[L,O],t);
+ wall('office-balcony-return-top',[-e/2,G-e/2],[Z-e/2,G-e/2],e);
+ wall('office-balcony-return-side',[Z-e/2,G],[Z-e/2,O],e);
+ const doorCentreX=(Math.max(returnLeft,balconyLeft)+balconyRight)/2;
+ wall('office-bottom',[Z,O],[L,O],t,[door('door-office-balcony',(doorCentreX-Z)/(L-Z),.86,1)]);
+ wall('balcony-projection-top',[F,O],[Z-e/2,O],t);
+ wall('left-balcony',[F,recStart],[F,recEnd],e);
+ wall('balcony-bottom',[F,D],[A,D],e);
+ wall('balcony-reception',[A,recStart],[A,recEnd],t,[door('door-balcony',(1.95+.61)/p.receptionLength,1.22,1),win('window-reception',(p.receptionLength-1.12-.775)/p.receptionLength,1.55)]);
+ const recWall=walls.at(-1);for(const o of recWall.openings)o.positionStatus='conflict';
+ wall('service-hall',[R,ensuiteTop],[R,lobbyBottom],serviceThickness,[{...door('passage-lobby',((lobbyTop+lobbyBottom)/2-ensuiteTop)/(lobbyBottom-ensuiteTop),.85),type:'passage'}]);
+ wall('bath-divider',[R,S],[B,S],t);
+ wall('bath-bottom',[R,H],[B,H],t);
+ // Main bathroom access is on its hall-side wall; place it on that segment.
+ const service=walls.find(w=>w.id==='service-hall');const bathDoor=door('door-bath',(7.75-ensuiteTop)/(lobbyBottom-ensuiteTop),.9,-1);
+ const q={...bathDoor,...s.openingOverrides['door-bath']};q.center=q.anchor*service.length;service.openings.push(q);
+ wall('court-ensuite',[Q,ensuiteTop],[Q,ensuiteBottom],e,[win('window-ensuite',1.1/p.ensuiteDepth,.8)]);
+ wall('court-bath',[B,bathTop],[B,bathBottom],e,[win('window-bath',.5,.82)]);
+ wall('court-lobby',[V,lobbyTop],[V,lobbyBottom],e,[win('window-lobby',.5,1.02)]);
+ wall('lobby-bath-return',[B,H],[V,H],t);
+ wall('kitchen-top',[R,K],[T,K],t,[door('door-kitchen',.24,.93,1),win('window-kitchen',.84,.95)]);
+ wall('kitchen-left',[R,kitchenTop],[R,kitchenBottom],serviceThickness);
+ wall('kitchen-right',[T,kitchenTop],[T,kitchenBottom],e);
+ wall('kitchen-bottom',[R,P+e/2],[T,P+e/2],e);
+ wall('reception-entry',[E,P+e/2],[R,P+e/2],e,[door('door-entry',.44,1.05,-1)]);
+ wall('reception-lower-right',[E,P],[E,D],e);
+ wall('reception-bottom',[A,D],[E,D],e);
+ const minX=F-e/2,maxX=T+e/2,minY=-e,maxY=D+e/2;
+ return {rooms,walls,minX,maxX,minY,maxY,width:maxX-minX,depth:maxY-minY,ceiling:p.ceilingHeight,usableArea:rooms.filter(r=>r.usable).reduce((sum,r)=>sum+r.area,0),bands:{C,L,R,T,B,Q,V,Y,N,S,H,K,J,P,O,D,A,E,X,F,Z,G},clear:{hallLeft,hallRight,officeTop,officeBottom,officeRight,recStart,recEnd,entryLine,recLeft,recLowerRight,balconyLeft,balconyRight,serviceLeft,bedroomServiceThickness},measurementConflicts:[{id:'reception-opening-chain',reportedTotal:6,segmentTotal:7.94,reportedMiddleGap:2.10,displayedMiddleGap:.16,affectedOpenings:['window-reception'],message:'طول الحائط المقاس 600 سم، ومجموع الأجزاء 794 سم. موضع شباك الريسبشن مؤقت؛ مقاس 210 سم محفوظ ويحتاج توفيقًا مع الطول الكلي.'}]};
+}

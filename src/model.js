@@ -54,7 +54,7 @@ export function makeItem(type,x,y,extra={}) {const c=catalog[type];return {id:ui
 export function resetItemSize(item){const c=catalog[item.type];Object.assign(item,{w:c.w,d:c.d,h:c.h,z:c.z||0});}
 export function initialState(){
  const params=Object.fromEntries(Object.entries(parameterInfo).map(([k,v])=>[k,{value:v[1],status:measurementStatus[k]}]));
- const s={schemaVersion:SCHEMA,apartmentId:'confirmed-draft-03',measurementRevision,hallWidthBasis:'clear',balconyShape:'external-return',lobbySideIsPassage:false,name:'توزيعنا بالمقاسات',params,openingOverrides:clone(measurementOpenings),alternatives:{cooking:'cooker',bathing:'shower',heater:'electricHeater'},items:[],servicePoints:[],notes:measurementNotes};
+ const s={schemaVersion:SCHEMA,apartmentId:'confirmed-draft-03',measurementRevision,hallWidthBasis:'clear',balconyShape:'external-return',exteriorLayout:'unmapped',lobbySideIsPassage:false,name:'توزيعنا بالمقاسات',params,openingOverrides:clone(measurementOpenings),alternatives:{cooking:'cooker',bathing:'shower',heater:'electricHeater'},items:[],servicePoints:[],notes:measurementNotes};
  const add=(t,x,y,e)=>s.items.push(makeItem(t,x,y,e));
  add('singleBed',.7,1.3,{id:'child-bed-1'});add('singleBed',3.85,1.3,{id:'child-bed-2'});add('wardrobe',2.3,3.2,{w:1.7,id:'child-wardrobe'});
  add('bed',6.85,1.3,{id:'main-bed'});add('wardrobe',8.3,1.5,{w:2.2,rotation:90,id:'main-wardrobe'});add('vanity',5.25,.35);add('tv',6.8,3.3,{w:1.2});
@@ -91,7 +91,7 @@ export function geometry(s){
  room('kitchen','المطبخ',[[R,K],[T,K],[T,J],[R,J]],'#eae8de');
  room('reception','الريسبشن',Math.abs(O-H)<.001?[[A,H],[R,H],[R,P],[E,P],[E,D],[A,D]]:[[A,O],[L,O],[L,H],[R,H],[R,P],[E,P],[E,D],[A,D]],'#eee8df');
  room('balcony','البلكونة',[[F,O],[A,O],[A,D],[F,D]],'#dce6de');
- room('stairs','السلم • خارج الشقة',P>J+.001?[[E,P],[R,P],[R,J],[T,J],[T,D],[E,D]]:[[E,P],[T,P],[T,D],[E,D]],'#e6e9e9',false);
+ if(s.exteriorLayout!=='unmapped')room('stairs','السلم • خارج الشقة',P>J+.001?[[E,P],[R,P],[R,J],[T,J],[T,D],[E,D]]:[[E,P],[T,P],[T,D],[E,D]],'#e6e9e9',false);
  const walls=[]; const wall=(id,a,b,open=[])=>{const length=Math.hypot(b[0]-a[0],b[1]-a[1]);walls.push({id,a,b,length,thickness:p.wallThickness,openings:open.map(o=>{const q={...o,...s.openingOverrides[o.id]};q.width=Math.min(q.width,length-.1);q.center=Math.max(q.width/2+(o.id==='window-ensuite'?0:.025),Math.min(length-q.width/2-(o.id==='window-ensuite'?0:.025),q.anchor*length));return q;})});};
  const door=(id,anchor,width=.85,swing=1,hinge=0)=>({id,type:'door',anchor,width,swing,hinge,height:2.1,status:'assistant-estimate'});
  const win=(id,anchor,width=1.1)=>({id,type:'window',anchor,width,height:1.1,sill:1,status:'assistant-estimate'});
@@ -161,7 +161,7 @@ export function applyMeasuredDimensions(s){
   o.x+=b[0]-a[0];o.y+=b[1]-a[1];
   keepObjectInRoom(o,room,s.params.wallThickness.value);
  }
- s.hallWidthBasis='clear';s.balconyShape='external-return';s.lobbySideIsPassage=false;s.measurementRevision=measurementRevision;s.notes=measurementNotes;
+ s.hallWidthBasis='clear';s.balconyShape='external-return';s.exteriorLayout='unmapped';s.lobbySideIsPassage=false;s.measurementRevision=measurementRevision;s.notes=measurementNotes;
  return s;
 }
 // On a survey update, shrinking a room must not strand existing furniture beyond

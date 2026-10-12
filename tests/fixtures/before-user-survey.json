@@ -1,0 +1,695 @@
+{
+  "schemaVersion": 1,
+  "apartmentId": "confirmed-draft-03",
+  "measurementRevision": "2026-10-12-outline-08",
+  "hallWidthBasis": "clear",
+  "balconyShape": "external-return",
+  "exteriorLayout": "unmapped",
+  "lobbySideIsPassage": false,
+  "name": "توزيعنا بالمقاسات",
+  "params": {
+    "leftWidth": {
+      "value": 4.6,
+      "status": "measured"
+    },
+    "officeWidth": {
+      "value": 4.35,
+      "status": "derived"
+    },
+    "officeDepth": {
+      "value": 4.7,
+      "status": "measured"
+    },
+    "officeNotchWidth": {
+      "value": 1,
+      "status": "user-estimate"
+    },
+    "hallWidth": {
+      "value": 1.2,
+      "status": "measured"
+    },
+    "kitchenWidth": {
+      "value": 3.25,
+      "status": "measured"
+    },
+    "courtyardWidth": {
+      "value": 1.13,
+      "status": "derived"
+    },
+    "bedroomDepth": {
+      "value": 3.6,
+      "status": "measured"
+    },
+    "ensuiteDepth": {
+      "value": 1.5,
+      "status": "measured"
+    },
+    "ensuiteWidth": {
+      "value": 2.1,
+      "status": "measured"
+    },
+    "bathDepth": {
+      "value": 2.8,
+      "status": "measured"
+    },
+    "lobbyDepth": {
+      "value": 1.37,
+      "status": "measured"
+    },
+    "lobbyWidth": {
+      "value": 2.26,
+      "status": "measured"
+    },
+    "kitchenDepth": {
+      "value": 3.25,
+      "status": "measured"
+    },
+    "receptionLength": {
+      "value": 7.69,
+      "status": "measured"
+    },
+    "receptionTail": {
+      "value": 1.2,
+      "status": "measured"
+    },
+    "receptionWidth": {
+      "value": 3.5,
+      "status": "measured"
+    },
+    "balconyWidth": {
+      "value": 0.75,
+      "status": "derived"
+    },
+    "balconyClearWidth": {
+      "value": 1.1,
+      "status": "user-estimate"
+    },
+    "balconyDoorReturnWidth": {
+      "value": 0.3,
+      "status": "user-estimate"
+    },
+    "balconyDoorReturnDepth": {
+      "value": 0.3,
+      "status": "user-estimate"
+    },
+    "entryReturn": {
+      "value": 1.43,
+      "status": "user-estimate"
+    },
+    "wallThickness": {
+      "value": 0.15,
+      "status": "assistant-estimate"
+    },
+    "ceilingHeight": {
+      "value": 3.1,
+      "status": "measured"
+    },
+    "grossArea": {
+      "value": 150,
+      "status": "user-estimate"
+    }
+  },
+  "openingOverrides": {
+    "door-entry": {
+      "width": 1.05,
+      "height": 2.3,
+      "status": "measured"
+    },
+    "door-office": {
+      "width": 0.93,
+      "height": 2.3,
+      "status": "measured"
+    },
+    "door-children": {
+      "width": 0.9,
+      "height": 2.3,
+      "status": "measured"
+    },
+    "door-bedroom": {
+      "width": 0.95,
+      "height": 2.3,
+      "status": "measured"
+    },
+    "door-ensuite": {
+      "width": 0.9,
+      "height": 2.3,
+      "status": "measured"
+    },
+    "door-bath": {
+      "width": 0.9,
+      "height": 2.3,
+      "status": "measured"
+    },
+    "door-kitchen": {
+      "width": 0.93,
+      "height": 2.3,
+      "status": "measured"
+    },
+    "door-office-balcony": {
+      "width": 0.83,
+      "height": 2.3,
+      "status": "measured"
+    },
+    "door-balcony": {
+      "anchor": 0.30559167750325095,
+      "width": 1.2,
+      "height": 2.3,
+      "status": "measured"
+    },
+    "window-children": {
+      "width": 1.6,
+      "height": 1.18,
+      "status": "measured"
+    },
+    "window-office": {
+      "width": 1.54,
+      "height": 1.16,
+      "status": "measured"
+    },
+    "window-reception": {
+      "anchor": 0.7503250975292587,
+      "width": 1.54,
+      "height": 1.2,
+      "status": "measured"
+    },
+    "window-bedroom": {
+      "width": 0.83,
+      "height": 1.02,
+      "status": "measured"
+    },
+    "window-ensuite": {
+      "anchor": 0.7333333333333334,
+      "width": 0.8,
+      "height": 0.82,
+      "status": "measured"
+    },
+    "window-bath": {
+      "width": 0.82,
+      "height": 0.82,
+      "status": "measured"
+    },
+    "window-lobby": {
+      "width": 1.02,
+      "height": 0.8,
+      "status": "measured"
+    },
+    "window-kitchen": {
+      "width": 0.95,
+      "height": 1,
+      "status": "measured"
+    }
+  },
+  "alternatives": {
+    "cooking": "cooker",
+    "bathing": "shower",
+    "heater": "electricHeater"
+  },
+  "items": [
+    {
+      "id": "child-bed-1",
+      "type": "singleBed",
+      "name": "سرير أطفال · مرتبة 90 × 200",
+      "x": 0.7,
+      "y": 1.3,
+      "w": 1.06,
+      "d": 2.09,
+      "h": 1,
+      "z": 0,
+      "rotation": 0,
+      "color": "#9fbecb"
+    },
+    {
+      "id": "child-bed-2",
+      "type": "singleBed",
+      "name": "سرير أطفال · مرتبة 90 × 200",
+      "x": 3.85,
+      "y": 1.3,
+      "w": 1.06,
+      "d": 2.09,
+      "h": 1,
+      "z": 0,
+      "rotation": 0,
+      "color": "#9fbecb"
+    },
+    {
+      "id": "child-wardrobe",
+      "type": "wardrobe",
+      "name": "دولاب",
+      "x": 2.3,
+      "y": 3.2,
+      "w": 1.7,
+      "d": 0.6,
+      "h": 2.2,
+      "z": 0,
+      "rotation": 0,
+      "color": "#b69779"
+    },
+    {
+      "id": "main-bed",
+      "type": "bed",
+      "name": "سرير كبير · مرتبة 180 × 200",
+      "x": 6.85,
+      "y": 1.3,
+      "w": 1.96,
+      "d": 2.09,
+      "h": 1,
+      "z": 0,
+      "rotation": 0,
+      "color": "#e3c6a0"
+    },
+    {
+      "id": "main-wardrobe",
+      "type": "wardrobe",
+      "name": "دولاب",
+      "x": 8.3,
+      "y": 1.5,
+      "w": 2.2,
+      "d": 0.6,
+      "h": 2.2,
+      "z": 0,
+      "rotation": 90,
+      "color": "#b69779"
+    },
+    {
+      "id": "cad4afa9-b74d-45dc-a7c0-f5c78b33f34a",
+      "type": "vanity",
+      "name": "تسريحة",
+      "x": 5.25,
+      "y": 0.35,
+      "w": 1.1,
+      "d": 0.45,
+      "h": 0.8,
+      "z": 0,
+      "rotation": 0,
+      "color": "#d7bd9d"
+    },
+    {
+      "id": "14bbf20b-28da-4038-8f27-3e867978d10a",
+      "type": "tv",
+      "name": "تلفزيون ووحدة",
+      "x": 6.8,
+      "y": 3.3,
+      "w": 1.2,
+      "d": 0.35,
+      "h": 1.1,
+      "z": 0,
+      "rotation": 0,
+      "color": "#718390"
+    },
+    {
+      "id": "desk-1",
+      "type": "desk",
+      "name": "مكتب بشاشتين",
+      "x": 1.25,
+      "y": 4.75,
+      "w": 1.6,
+      "d": 0.8,
+      "h": 0.75,
+      "z": 0,
+      "rotation": 0,
+      "color": "#bda889"
+    },
+    {
+      "id": "desk-2",
+      "type": "desk",
+      "name": "مكتب بشاشتين",
+      "x": 2.2,
+      "y": 6.3,
+      "w": 1.6,
+      "d": 0.8,
+      "h": 0.75,
+      "z": 0,
+      "rotation": 0,
+      "color": "#bda889"
+    },
+    {
+      "id": "1320c042-d4bb-49e5-a3f8-ed07b7c2f62c",
+      "type": "chair",
+      "name": "كرسي مكتب",
+      "x": 1.25,
+      "y": 5.5,
+      "w": 0.68,
+      "d": 0.68,
+      "h": 1.05,
+      "z": 0,
+      "rotation": 0,
+      "color": "#667c88"
+    },
+    {
+      "id": "0d810d1e-98c6-4410-bc76-6f2cc901bbfe",
+      "type": "chair",
+      "name": "كرسي مكتب",
+      "x": 2.2,
+      "y": 7.05,
+      "w": 0.68,
+      "d": 0.68,
+      "h": 1.05,
+      "z": 0,
+      "rotation": 0,
+      "color": "#667c88"
+    },
+    {
+      "id": "daily-sofa",
+      "type": "sofa",
+      "name": "كنبة 3 مقاعد",
+      "x": 1.5,
+      "y": 10.45,
+      "w": 2.27,
+      "d": 0.95,
+      "h": 0.83,
+      "z": 0,
+      "rotation": 90,
+      "color": "#77988d"
+    },
+    {
+      "id": "daily-tv",
+      "type": "tv",
+      "name": "تلفزيون ووحدة",
+      "x": 4.5,
+      "y": 10.45,
+      "w": 1.5,
+      "d": 0.35,
+      "h": 1.1,
+      "z": 0,
+      "rotation": 90,
+      "color": "#718390"
+    },
+    {
+      "id": "38d83924-d7d4-49dc-82dd-a944b5c94b7d",
+      "type": "coffee",
+      "name": "ترابيزة وسط",
+      "x": 2.75,
+      "y": 10.45,
+      "w": 1.1,
+      "d": 0.6,
+      "h": 0.42,
+      "z": 0,
+      "rotation": 0,
+      "color": "#cba97b"
+    },
+    {
+      "id": "guest-sofa",
+      "type": "sofa",
+      "name": "كنبة 3 مقاعد",
+      "x": 2.5,
+      "y": 13.55,
+      "w": 2.1,
+      "d": 0.95,
+      "h": 0.83,
+      "z": 0,
+      "rotation": 0,
+      "color": "#77988d"
+    },
+    {
+      "id": "5de61ade-7e5a-45fa-9fb3-29d4137ea14e",
+      "type": "armchair",
+      "name": "كرسي ضيوف",
+      "x": 1.5,
+      "y": 12.35,
+      "w": 0.8,
+      "d": 0.8,
+      "h": 0.78,
+      "z": 0,
+      "rotation": 0,
+      "color": "#bb9b80"
+    },
+    {
+      "id": "57500658-0491-4b4d-9bba-f4f296bf305a",
+      "type": "armchair",
+      "name": "كرسي ضيوف",
+      "x": 3.5,
+      "y": 12.35,
+      "w": 0.8,
+      "d": 0.8,
+      "h": 0.78,
+      "z": 0,
+      "rotation": 0,
+      "color": "#bb9b80"
+    },
+    {
+      "id": "10760f21-efbc-41ca-b9d2-27b041e38e35",
+      "type": "coffee",
+      "name": "ترابيزة وسط",
+      "x": 2.5,
+      "y": 12.55,
+      "w": 0.9,
+      "d": 0.6,
+      "h": 0.42,
+      "z": 0,
+      "rotation": 0,
+      "color": "#cba97b"
+    },
+    {
+      "id": "bathing-main",
+      "type": "shower",
+      "name": "دش بحاجز زجاج",
+      "x": 6.775,
+      "y": 6.05,
+      "w": 0.9,
+      "d": 0.9,
+      "h": 2,
+      "z": 0,
+      "rotation": 0,
+      "color": "#a8d4d6",
+      "role": "bathing"
+    },
+    {
+      "id": "7e1dd1ea-6e00-4c2e-bf56-df0e077c51e0",
+      "type": "toilet",
+      "name": "قاعدة حمام",
+      "x": 7.07,
+      "y": 7.6,
+      "w": 0.4,
+      "d": 0.68,
+      "h": 0.72,
+      "z": 0,
+      "rotation": 90,
+      "color": "#cbd6dc"
+    },
+    {
+      "id": "287d18b9-0f10-48bd-8ffb-7acd6ba11997",
+      "type": "basin",
+      "name": "حوض حمام",
+      "x": 6.025,
+      "y": 6.35,
+      "w": 0.55,
+      "d": 0.45,
+      "h": 0.85,
+      "z": 0,
+      "rotation": 0,
+      "color": "#b7d0d1"
+    },
+    {
+      "id": "4600df0c-84d8-4f31-bf8b-9c202ee94753",
+      "type": "shower",
+      "name": "دش بحاجز زجاج",
+      "x": 7.1,
+      "y": 4.55,
+      "w": 0.9,
+      "d": 0.9,
+      "h": 2,
+      "z": 0,
+      "rotation": 0,
+      "color": "#a8d4d6"
+    },
+    {
+      "id": "ccae70da-d22d-4fe0-bb29-e4654dea3550",
+      "type": "toilet",
+      "name": "قاعدة حمام",
+      "x": 6.05,
+      "y": 4.7,
+      "w": 0.4,
+      "d": 0.68,
+      "h": 0.72,
+      "z": 0,
+      "rotation": 90,
+      "color": "#cbd6dc"
+    },
+    {
+      "id": "590ba1d3-7cf2-4d64-8f2d-c7389cf55467",
+      "type": "basin",
+      "name": "حوض حمام",
+      "x": 7.1,
+      "y": 3.87,
+      "w": 0.5,
+      "d": 0.35,
+      "h": 0.85,
+      "z": 0,
+      "rotation": 0,
+      "color": "#b7d0d1"
+    },
+    {
+      "id": "washer",
+      "type": "washer",
+      "name": "غسالة فتحة علوية 9 كجم",
+      "x": 7.25,
+      "y": 8.6,
+      "w": 0.55,
+      "d": 0.565,
+      "h": 0.93,
+      "z": 0,
+      "rotation": 0,
+      "color": "#b1c8d1"
+    },
+    {
+      "id": "heater-choice",
+      "type": "electricHeater",
+      "name": "سخان كهرباء (مكان مبدئي)",
+      "x": 7.25,
+      "y": 8.6,
+      "w": 0.48,
+      "d": 0.45,
+      "h": 0.7,
+      "z": 1.65,
+      "rotation": 0,
+      "color": "#bac9ca",
+      "role": "heater"
+    },
+    {
+      "id": "fridge",
+      "type": "fridge",
+      "name": "ثلاجة",
+      "x": 6.22,
+      "y": 12.05,
+      "w": 0.75,
+      "d": 0.7,
+      "h": 1.85,
+      "z": 0,
+      "rotation": 180,
+      "color": "#b7c4c8"
+    },
+    {
+      "id": "6f992bb4-a1ea-48d6-95d2-57a5ad8be518",
+      "type": "freezer",
+      "name": "فريزر رأسي",
+      "x": 7,
+      "y": 12.05,
+      "w": 0.6,
+      "d": 0.65,
+      "h": 1.65,
+      "z": 0,
+      "rotation": 180,
+      "color": "#a8b7bd"
+    },
+    {
+      "id": "2ecda4e2-57cd-4dc4-a118-d51f25aad670",
+      "type": "sink",
+      "name": "حوض مطبخ",
+      "x": 8.32,
+      "y": 10.55,
+      "w": 0.8,
+      "d": 0.6,
+      "h": 0.9,
+      "z": 0,
+      "rotation": 90,
+      "color": "#a2bbc0"
+    },
+    {
+      "id": "35e26286-a0c7-4c12-9349-4ee995c99ec8",
+      "type": "dishwasher",
+      "name": "مكان غسالة أطباق",
+      "x": 8.32,
+      "y": 11.35,
+      "w": 0.6,
+      "d": 0.6,
+      "h": 0.86,
+      "z": 0,
+      "rotation": 90,
+      "color": "#c2cbd0"
+    },
+    {
+      "id": "cooking-main",
+      "type": "cooker",
+      "name": "بوتاجاز بفرن",
+      "x": 5.95,
+      "y": 10.7,
+      "w": 0.6,
+      "d": 0.6,
+      "h": 0.9,
+      "z": 0,
+      "rotation": 270,
+      "color": "#8c9da4",
+      "role": "cooking"
+    },
+    {
+      "id": "cooking-hood",
+      "type": "hood",
+      "name": "شفاط",
+      "x": 5.95,
+      "y": 10.7,
+      "w": 0.65,
+      "d": 0.45,
+      "h": 0.25,
+      "z": 1.8,
+      "rotation": 270,
+      "color": "#718790"
+    },
+    {
+      "id": "48c1eb4f-ec40-48fa-af90-71c488fbb2e4",
+      "type": "counter",
+      "name": "وحدة مطبخ",
+      "x": 7.75,
+      "y": 12.05,
+      "w": 0.6,
+      "d": 0.6,
+      "h": 0.9,
+      "z": 0,
+      "rotation": 0,
+      "color": "#c6baa5"
+    },
+    {
+      "id": "e9e7cc0c-2888-44f5-8e0f-1ca784f27bbf",
+      "type": "ac",
+      "name": "وحدة تكييف مبدئية",
+      "x": 2.3,
+      "y": 0.2,
+      "w": 0.85,
+      "d": 0.22,
+      "h": 0.3,
+      "z": 2.25,
+      "rotation": 0,
+      "color": "#c6d6df"
+    },
+    {
+      "id": "399d459b-66aa-4d0e-9c50-3d0a68034ca0",
+      "type": "ac",
+      "name": "وحدة تكييف مبدئية",
+      "x": 7.2,
+      "y": 0.2,
+      "w": 0.85,
+      "d": 0.22,
+      "h": 0.3,
+      "z": 2.25,
+      "rotation": 0,
+      "color": "#c6d6df"
+    },
+    {
+      "id": "6670d33d-5f80-4d1a-905b-afb81f485020",
+      "type": "ac",
+      "name": "وحدة تكييف مبدئية",
+      "x": 2.4,
+      "y": 3.8,
+      "w": 0.85,
+      "d": 0.22,
+      "h": 0.3,
+      "z": 2.25,
+      "rotation": 0,
+      "color": "#c6d6df"
+    },
+    {
+      "id": "a22f4609-ad35-4496-82fc-a0c038b962a6",
+      "type": "ac",
+      "name": "وحدة تكييف مبدئية",
+      "x": 2,
+      "y": 13.82,
+      "w": 0.85,
+      "d": 0.22,
+      "h": 0.3,
+      "z": 2.25,
+      "rotation": 0,
+      "color": "#c6d6df"
+    }
+  ],
+  "servicePoints": [],
+  "notes": "تصحيح 12 أكتوبر: طرقة الأوض عرضها 1.20 م صافي بين وجهي الحائطين، وسماكة الحيطان لا تُخصم منه. الحمام الصغير 2.10 م عرض × 1.50 م طول، شباكه 0.80 م بعد 0.70 م من حائط النوم حتى نهاية الحائط. حائط الريسبشن: 1.75 م حائط + 1.20 م باب بلكونة + 2.05 م حائط + 1.54 م شباك + 1.15 م حائط = 7.69 م. عرض الجزء الضيق من الريسبشن 3.50 م، ويتسع أمام باب الشقة حتى حائط المطبخ؛ 3.60 م حتى بداية الطرقة + 1.20 م طرقة = 4.80 م للجزء الواسع. عرض المكتب بعد الركنة محسوب 4.35 م للحفاظ على حد الخدمات السابق؛ موضع حائط البلكونة مع الريسبشن 0.75 م من المحاذاة؛ البلكونة بارزة للخارج وفيه ردة عند باب المكتب حسب المستخدم. عرضها الصافي 1.10 م، والردة 0.30 × 0.30 م كمقاسات مبدئية قابلة للتعديل وليست قياسًا مباشرًا؛ طول المكتب 4.70 م مؤكد، ونهايته بعد نهاية الحمام الكبير 0.40 م. الجزء من ركنة باب الشقة للنهاية 1.20 م مستقل عن طول حائط البلكونة 7.69 م. جانب الغسالة ليس مسار مرور حسب المستخدم. عمق ركنة المكتب وأبعاد البروز والردة يحتاجان قياسًا مباشرًا. المساحة الخارجية المضافة تحت المطبخ حُذفت حسب تصحيح المستخدم؛ خارج حدود الشقة غير مرسوم لعدم وجود قياسات معتمدة له. سماكات الحيطان واتجاه الفتح وجلسات الشبابيك تقديرية."
+}
