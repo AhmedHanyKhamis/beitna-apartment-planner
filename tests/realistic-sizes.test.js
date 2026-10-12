@@ -1,9 +1,36 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {catalog,initialState,makeItem,geometry,validateState,clone,setAlternative,resetItemSize} from '../src/model.js';
+import {catalog,initialState,makeItem,geometry,validateState,clone,setAlternative,resetItemSize,wallPoint,applyMeasuredDimensions} from '../src/model.js';
 import {View3D} from '../src/view3d.js';
 import {Store} from '../src/store.js';
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
+test('external balcony and door return contain the full 83 cm opening without moving reception',()=>{
+ const s=initialState(),g=geometry(s),left=g.walls.find(w=>w.id==='left-balcony'),right=g.walls.find(w=>w.id==='balcony-reception');
+ near(right.a[0]-right.thickness/2-(left.a[0]+left.thickness/2),1.1);assert.ok(left.a[0]<0);
+ const bottom=g.walls.find(w=>w.id==='office-bottom'),door=bottom.openings.find(o=>o.id==='door-office-balcony');near(door.width,.83);
+ const start=wallPoint(bottom,door.center-door.width/2)[0],end=wallPoint(bottom,door.center+door.width/2)[0];
+ assert.ok(start>=g.bands.Z+s.params.wallThickness.value/2);assert.ok(end<=g.bands.A-right.thickness/2);
+ const before=clone(g.rooms.find(r=>r.id==='reception').poly);s.params.balconyClearWidth.value=1.4;s.params.balconyDoorReturnWidth.value=.4;validateState(s);
+ assert.deepEqual(geometry(s).rooms.find(r=>r.id==='reception').poly,before);
+ s.params.balconyClearWidth.value=.8;assert.throws(()=>validateState(s));
+});
+test('applying the external return keeps office furniture at its existing position',()=>{
+ const s=initialState();delete s.balconyShape;const desks=s.items.filter(o=>o.type==='desk').map(o=>[o.id,o.x,o.y]);
+ applyMeasuredDimensions(s);validateState(s);assert.deepEqual(s.items.filter(o=>o.type==='desk').map(o=>[o.id,o.x,o.y]),desks);
+});
+test('hall remains 120 cm between actual wall faces across wall thickness choices',()=>{
+ for(const thickness of [.1,.15,.3]){
+  const s=initialState();s.params.wallThickness.value=thickness;s.params.balconyDoorReturnWidth.value=thickness>.2?.5:.3;
+  const g=geometry(s),left=g.walls.find(w=>w.id==='office-hall'),right=g.walls.find(w=>w.id==='service-hall');
+  near(right.a[0]-right.thickness/2-(left.a[0]+left.thickness/2),1.2);validateState(s);
+ }
+});
+test('entry tail is 120 cm independently of the 769 cm balcony wall and kitchen depth',()=>{
+ const s=initialState();for(const depth of [3,3.25,3.6]){
+  s.params.kitchenDepth.value=depth;const g=geometry(s),tail=g.walls.find(w=>w.id==='reception-lower-right');
+  near(tail.length,1.2);near(g.walls.find(w=>w.id==='balcony-reception').length,7.69);near(g.bands.D-g.bands.P,1.2);validateState(s);
+ }
+});
 test('confirmed wall segments and end-of-wall bathroom window use exact clear offsets',()=>{
  const s=initialState(),g=geometry(s),w=g.walls.find(w=>w.id==='balcony-reception'),[door,win]=w.openings;
  near(w.length,7.69);near(door.center-door.width/2,1.75);near(win.center-win.width/2-(door.center+door.width/2),2.05);near(w.length-win.center-win.width/2,1.15);

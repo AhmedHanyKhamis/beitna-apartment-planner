@@ -1,7 +1,7 @@
 const pw=require('C:/Users/HP/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const assert=require('node:assert/strict'),fs=require('node:fs');
 (async()=>{const browser=await pw.chromium.launch({headless:true,channel:'chrome',args:['--enable-unsafe-swiftshader']});const page=await browser.newPage({viewport:{width:1600,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));try{
-await page.goto('http://127.0.0.1:4173');await page.waitForFunction(()=>window.apartmentPlanner);
+await page.goto(process.env.REVIEW_URL||'http://127.0.0.1:4173');await page.waitForFunction(()=>window.apartmentPlanner);
 assert.equal(await page.evaluate(()=>apartmentPlanner.getGraphicsInfo().error),0);
 assert.equal(await page.locator('[data-add-item="bed"] small').textContent(),'196 × 209 × 100 سم');
 await page.locator('[data-add-item="bed"]').click();let s=await page.evaluate(()=>apartmentPlanner.getState());const id=s.items.at(-1).id;assert.equal(s.items.at(-1).w,1.96);

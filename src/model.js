@@ -13,9 +13,11 @@ export const parameterInfo={
   ensuiteWidth:['عرض الحمام الصغير',2.1,1.6,3],
   bathDepth:['عمق الحمام الكبير',2.8,1.8,4],lobbyDepth:['الطرقة الصغيرة بين الحمام والمطبخ',1.37,.65,2],
   lobbyWidth:['عرض الطرقة الصغيرة حتى المنور',2.26,1.6,3],
-  kitchenDepth:['عمق المطبخ',3.25,2,5],receptionTail:['الريسبشن من ركنة المدخل للنهاية',3.47,.5,6],
+  kitchenDepth:['عمق المطبخ',3.25,2,5],receptionLength:['طول حائط بلكونة الريسبشن',7.69,3,16],
+  receptionTail:['الريسبشن من ركنة المدخل للنهاية',1.2,.5,6],
   receptionWidth:['عرض الجزء السفلي من الريسبشن',3.5,1.8,5],
-  balconyWidth:['عرض البلكونة الناتج عن محاذاة الريسبشن',.75,.5,3],entryReturn:['عمق ركنة المكتب - من التسجيل السابق',1.43,.5,2.4],
+  balconyWidth:['موضع حائط البلكونة مع الريسبشن – من المحاذاة',.75,.5,3],
+  balconyClearWidth:['عرض البلكونة الصافي – مبدئي',1.1,.3,3],balconyDoorReturnWidth:['عرض الردّة عند باب المكتب – مبدئي',.3,0,1],balconyDoorReturnDepth:['عمق الردّة عند باب المكتب – مبدئي',.3,0,1],entryReturn:['عمق ركنة المكتب - من التسجيل السابق',1.43,.5,2.4],
   wallThickness:['سمك الحائط - غير مقاس',.15,.1,.3],ceilingHeight:['ارتفاع السقف',3.1,2.4,3.6],grossArea:['المساحة الإجمالية المبلّغ عنها',150,80,250]
 };
 export const catalog={
@@ -52,14 +54,14 @@ export function makeItem(type,x,y,extra={}) {const c=catalog[type];return {id:ui
 export function resetItemSize(item){const c=catalog[item.type];Object.assign(item,{w:c.w,d:c.d,h:c.h,z:c.z||0});}
 export function initialState(){
  const params=Object.fromEntries(Object.entries(parameterInfo).map(([k,v])=>[k,{value:v[1],status:measurementStatus[k]}]));
- const s={schemaVersion:SCHEMA,apartmentId:'confirmed-draft-03',measurementRevision,name:'توزيعنا بالمقاسات',params,openingOverrides:clone(measurementOpenings),alternatives:{cooking:'cooker',bathing:'shower',heater:'electricHeater'},items:[],servicePoints:[],notes:measurementNotes};
+ const s={schemaVersion:SCHEMA,apartmentId:'confirmed-draft-03',measurementRevision,hallWidthBasis:'clear',balconyShape:'external-return',lobbySideIsPassage:false,name:'توزيعنا بالمقاسات',params,openingOverrides:clone(measurementOpenings),alternatives:{cooking:'cooker',bathing:'shower',heater:'electricHeater'},items:[],servicePoints:[],notes:measurementNotes};
  const add=(t,x,y,e)=>s.items.push(makeItem(t,x,y,e));
  add('singleBed',.7,1.3,{id:'child-bed-1'});add('singleBed',3.85,1.3,{id:'child-bed-2'});add('wardrobe',2.3,3.2,{w:1.7,id:'child-wardrobe'});
  add('bed',6.85,1.3,{id:'main-bed'});add('wardrobe',8.3,1.5,{w:2.2,rotation:90,id:'main-wardrobe'});add('vanity',5.25,.35);add('tv',6.8,3.3,{w:1.2});
  add('desk',1.25,4.75,{id:'desk-1'});add('desk',2.2,6.3,{id:'desk-2'});add('chair',1.25,5.5);add('chair',2.2,7.05);
  add('sofa',1.5,10.45,{rotation:90,id:'daily-sofa'});add('tv',4.5,10.45,{rotation:90,id:'daily-tv'});add('coffee',2.75,10.45);
  add('sofa',2.5,13.55,{w:2.1,id:'guest-sofa'});add('armchair',1.5,12.35);add('armchair',3.5,12.35);add('coffee',2.5,12.55,{w:.9});
- add('shower',6.7,6.05,{id:'bathing-main',role:'bathing'});add('toilet',7.07,7.6,{rotation:90});add('basin',5.95,6.35);
+ add('shower',6.775,6.05,{id:'bathing-main',role:'bathing'});add('toilet',7.07,7.6,{rotation:90});add('basin',6.025,6.35);
  add('shower',7.1,4.55);add('toilet',6.05,4.7,{rotation:90});add('basin',7.1,3.87,{w:.5,d:.35});
  add('washer',7.25,8.6,{id:'washer'});add('electricHeater',7.25,8.6,{id:'heater-choice',role:'heater'});
  add('fridge',6.22,12.05,{id:'fridge',rotation:180});add('freezer',7,12.05,{rotation:180});add('sink',8.32,10.55,{rotation:90});add('dishwasher',8.32,11.35,{rotation:90});add('cooker',5.95,10.7,{rotation:270,id:'cooking-main',role:'cooking'});add('hood',5.95,10.7,{rotation:270,id:'cooking-hood'});add('counter',7.75,12.05);
@@ -70,42 +72,65 @@ const area=p=>Math.abs(p.reduce((a,v,i)=>{const n=p[(i+1)%p.length];return a+v[0
 export function geometry(s){
  const p=Object.fromEntries(Object.entries(s.params).map(([k,v])=>[k,v.value]));
  const C=p.leftWidth,L=p.officeWidth??C,R=L+p.hallWidth,T=R+p.kitchenWidth,B=T-p.courtyardWidth;
- const Y=p.bedroomDepth,N=Y+p.entryReturn,S=Y+p.ensuiteDepth,H=S+p.bathDepth,K=H+p.lobbyDepth,J=K+p.kitchenDepth,D=J+p.receptionTail;
+ const Y=p.bedroomDepth,N=Y+p.entryReturn,S=Y+p.ensuiteDepth,H=S+p.bathDepth,K=H+p.lobbyDepth,J=K+p.kitchenDepth;
  const O=Y+(p.officeDepth??(p.ensuiteDepth+p.bathDepth));
+ const D=p.receptionLength===undefined?J+p.receptionTail:O+p.receptionLength,P=D-p.receptionTail;
  const A=p.balconyWidth,E=p.receptionWidth===undefined?L-.35:A+p.receptionWidth,X=L-(p.officeNotchWidth??1.05);
+ const externalBalcony=s.balconyShape==='external-return',F=externalBalcony?A-p.balconyClearWidth-p.wallThickness:0,Z=externalBalcony?-p.balconyDoorReturnWidth:0,G=externalBalcony?O-p.balconyDoorReturnDepth:O;
  const Q=R+(p.ensuiteWidth??(B-R));
  const V=R+(p.lobbyWidth??(B-R));
  const rooms=[];const room=(id,name,poly,color,usable=true)=>rooms.push({id,name,poly,color,area:area(poly),usable});
  room('children','أوضة الأطفال',[[0,0],[C,0],[C,Y],[0,Y]],'#e6edf1');
  room('bedroom','أوضة النوم',[[C,0],[T,0],[T,Y],[C,Y]],'#eee8dd');
- room('office','المكتب',[[0,Y],[X,Y],[X,N],[L,N],[L,O],[0,O]],'#e6ece6');
+ room('office','المكتب',externalBalcony?[[0,Y],[X,Y],[X,N],[L,N],[L,O],[Z,O],[Z,G],[0,G]]:[[0,Y],[X,Y],[X,N],[L,N],[L,O],[0,O]],'#e6ece6');
  room('hall','طرقة الأوض',[[X,Y],[R,Y],[R,H],[L,H],[L,N],[X,N]],'#f0efe8');
  room('ensuite','حمام النوم',[[R,Y],[Q,Y],[Q,S],[R,S]],'#deedf0');
  room('bath','الحمام الكبير',[[R,S],[B,S],[B,H],[R,H]],'#dcebf0');
  room('lobby','طرقة صغيرة',[[R,H],[V,H],[V,K],[R,K]],'#e7ece5');
  room('courtyard','المنور',[[Q,Y],[T,Y],[T,K],[V,K],[V,H],[B,H],[B,S],[Q,S]],'#ccd6d3',false);
  room('kitchen','المطبخ',[[R,K],[T,K],[T,J],[R,J]],'#eae8de');
- room('reception','الريسبشن',Math.abs(O-H)<.001?[[A,H],[R,H],[R,J],[E,J],[E,D],[A,D]]:[[A,O],[L,O],[L,H],[R,H],[R,J],[E,J],[E,D],[A,D]],'#eee8df');
- room('balcony','البلكونة',[[0,O],[A,O],[A,D],[0,D]],'#dce6de');
- room('stairs','السلم • خارج الشقة',[[E,J],[T,J],[T,D],[E,D]],'#e6e9e9',false);
+ room('reception','الريسبشن',Math.abs(O-H)<.001?[[A,H],[R,H],[R,P],[E,P],[E,D],[A,D]]:[[A,O],[L,O],[L,H],[R,H],[R,P],[E,P],[E,D],[A,D]],'#eee8df');
+ room('balcony','البلكونة',[[F,O],[A,O],[A,D],[F,D]],'#dce6de');
+ room('stairs','السلم • خارج الشقة',P>J+.001?[[E,P],[R,P],[R,J],[T,J],[T,D],[E,D]]:[[E,P],[T,P],[T,D],[E,D]],'#e6e9e9',false);
  const walls=[]; const wall=(id,a,b,open=[])=>{const length=Math.hypot(b[0]-a[0],b[1]-a[1]);walls.push({id,a,b,length,thickness:p.wallThickness,openings:open.map(o=>{const q={...o,...s.openingOverrides[o.id]};q.width=Math.min(q.width,length-.1);q.center=Math.max(q.width/2+(o.id==='window-ensuite'?0:.025),Math.min(length-q.width/2-(o.id==='window-ensuite'?0:.025),q.anchor*length));return q;})});};
  const door=(id,anchor,width=.85,swing=1,hinge=0)=>({id,type:'door',anchor,width,swing,hinge,height:2.1,status:'assistant-estimate'});
  const win=(id,anchor,width=1.1)=>({id,type:'window',anchor,width,height:1.1,sill:1,status:'assistant-estimate'});
- wall('outer-top',[0,0],[T,0]);wall('left-children',[0,0],[0,Y],[win('window-children',.5,1.25)]);wall('left-office',[0,Y],[0,O],[win('window-office',.55)]);wall('left-balcony',[0,O],[0,D]);
+ wall('outer-top',[0,0],[T,0]);wall('left-children',[0,0],[0,Y],[win('window-children',.5,1.25)]);wall('left-office',[0,Y],[0,G],[win('window-office',.55)]);wall('left-balcony',[F,O],[F,D]);
+ if(externalBalcony){wall('office-balcony-return-top',[0,G],[Z,G]);wall('office-balcony-return-side',[Z,G],[Z,O]);wall('balcony-projection-top',[F,O],[Z,O]);}
  wall('bedroom-split',[C,0],[C,Y]);wall('children-bottom',[0,Y],[C,Y],[door('door-children',(C-.54)/C,.9,-1)]);
  wall('bedroom-bottom',[C,Y],[T,Y],[door('door-bedroom',(R-C)/(2*(T-C)),Math.min(.95,R-C-.05),-1),door('door-ensuite',(R+(B-R)*.35-C)/(T-C),.75,1),win('window-bedroom',(B+(T-B)/2-C)/(T-C),.55)]);
  wall('outer-bedroom',[T,0],[T,Y]);wall('office-return',[X,Y],[X,N],[door('door-office',.5,.92,-1)]);wall('office-return-bottom',[X,N],[L,N]);wall('office-hall',[L,N],[L,H]);
  if(O>H+.001)wall('office-reception-step',[L,H],[L,O]);
- wall('office-bottom',[0,O],[L,O],[door('door-office-balcony',A/(2*L),Math.max(.65,A-.08),-1)]);
+ const officeBalconyDoor=externalBalcony?door('door-office-balcony',((Z+A)/2-Z)/(L-Z),.83,1):door('door-office-balcony',A/(2*L),Math.max(.65,A-.08),-1);
+ wall('office-bottom',[Z,O],[L,O],[officeBalconyDoor]);
  wall('service-hall',[R,Y],[R,K],[{...door('passage-lobby',(H+p.lobbyDepth/2-Y)/(K-Y),Math.min(.85,p.lobbyDepth-.1)),type:'passage'}]);
  wall('bath-divider',[R,S],[Math.max(B,Q),S]);wall('bath-bottom',[R,H],[B,H],[door('door-bath',.27,.8,-1)]);
  wall('court-ensuite',[Q,Y],[Q,S],[win('window-ensuite',1.1/p.ensuiteDepth,.8)]);wall('court-bath',[B,S],[B,H],[win('window-bath',.55,.65)]);wall('court-lobby',[V,H],[V,K],[win('window-lobby',.5,.55)]);
  if(Math.abs(V-B)>.001)wall('lobby-bath-return',[B,H],[V,H]);
  wall('kitchen-top',[R,K],[T,K],[door('door-kitchen',.23,.8,1),win('window-kitchen',((V+T)/2-R)/p.kitchenWidth,.55)]);
  wall('kitchen-left',[R,K],[R,J]);wall('kitchen-right',[T,K],[T,J]);wall('kitchen-bottom',[R,J],[T,J]);
- if(Math.abs(E-R)<.001){wall('reception-entry',[E,J],[E,D],[door('door-entry',.25,1.05,-1)]);}else{wall('reception-entry',[E,J],[R,J],[door('door-entry',.52,1.05,-1)]);wall('reception-lower-right',[E,J],[E,D]);}wall('reception-bottom',[A,D],[E,D]);
- wall('balcony-bottom',[0,D],[A,D]);wall('balcony-reception',[A,O],[A,D],[door('door-balcony',.22,.75,1),win('window-reception',.83,1.1)]);
- return {rooms,walls,width:T,depth:D,ceiling:p.ceilingHeight,usableArea:rooms.filter(r=>r.usable).reduce((a,r)=>a+r.area,0),bands:{C,L,R,B,T,Y,N,S,H,K,J,D,A,E,X,V,O}};
+ if(P>J+.001)wall('reception-stairs-side',[R,J],[R,P]);
+ if(Math.abs(E-R)<.001){wall('reception-entry',[E,P],[E,D],[door('door-entry',.25,1.05,-1)]);}else{wall('reception-entry',[E,P],[R,P],[door('door-entry',.52,1.05,-1)]);wall('reception-lower-right',[E,P],[E,D]);}wall('reception-bottom',[A,D],[E,D]);
+ wall('balcony-bottom',[F,D],[A,D]);wall('balcony-reception',[A,O],[A,D],[door('door-balcony',.22,.75,1),win('window-reception',.83,1.1)]);
+ // The confirmed hall width is face-to-face. Put half the wall thickness
+ // on each adjoining room, keeping the measured circulation strip [L,R] clear.
+ if(s.hallWidthBasis==='clear'){
+  const t=p.wallThickness/2;
+  for(const r of rooms){if(['ensuite','bath','lobby'].includes(r.id)){r.poly=r.poly.map(([x,y])=>[x+t,y]);r.area=area(r.poly);continue;}
+   if(r.id==='courtyard'){r.poly=r.poly.map(([x,y])=>[Math.abs(x-T)<1e-8?x:x+t,y]);r.area=area(r.poly);continue;}
+   if(r.id==='reception'){const i=r.poly.findIndex(q=>Math.abs(q[0]-R)<1e-8&&Math.abs(q[1]-H)<1e-8);if(i>=0)r.poly.splice(i,1,[R+t,H],[R+t,K],[R,K]);}
+   if(['office','hall','reception'].includes(r.id)){
+   r.poly=r.poly.map(([x,y])=>[Math.abs(x-L)<1e-8&&y>=N-1e-8?x-t:Math.abs(x-R)<1e-8&&['hall','ensuite','bath','lobby'].includes(r.id)?x+t:x,y]);r.area=area(r.poly);
+  }}
+  for(const w of walls){
+   if(['office-return-bottom','office-hall','office-reception-step','office-bottom'].includes(w.id))for(const q of [w.a,w.b])if(Math.abs(q[0]-L)<1e-8)q[0]-=t;
+   if(['service-hall','bath-divider','bath-bottom','court-ensuite','court-bath','court-lobby','lobby-bath-return'].includes(w.id))for(const q of [w.a,w.b])q[0]+=t;
+   if(w.id==='kitchen-top'&&Math.abs(w.a[0]-R)<1e-8)w.a[0]+=t;
+   const oldLength=w.length;w.length=Math.hypot(w.b[0]-w.a[0],w.b[1]-w.a[1]);
+   if(Math.abs(w.length-oldLength)>1e-8)for(const op of w.openings){const pad=op.id==='window-ensuite'?0:.025;op.width=Math.min(op.width,w.length-.1);op.center=Math.max(op.width/2+pad,Math.min(w.length-op.width/2-pad,op.anchor*w.length));}
+  }
+ }
+ return {rooms,walls,minX:F,maxX:T,width:T-F,depth:D,ceiling:p.ceilingHeight,usableArea:rooms.filter(r=>r.usable).reduce((a,r)=>a+r.area,0),bands:{C,L,R,B,T,Y,N,S,H,K,J,D,A,E,X,V,O,P,F,Z,G}};
 }
 export function wallPoint(w,d){const t=d/w.length;return [w.a[0]+(w.b[0]-w.a[0])*t,w.a[1]+(w.b[1]-w.a[1])*t];}
 export function wallPieces(w){let cursor=0;const out=[];for(const o of [...w.openings].sort((a,b)=>a.center-b.center)){const a=o.center-o.width/2,b=o.center+o.width/2;if(a>cursor)out.push({a:wallPoint(w,cursor),b:wallPoint(w,a),z:0,h:null});if(o.type==='window')out.push({a:wallPoint(w,a),b:wallPoint(w,b),z:0,h:o.sill});if(o.type!=='passage')out.push({a:wallPoint(w,a),b:wallPoint(w,b),z:(o.sill||0)+o.height,h:null});cursor=b;}if(cursor<w.length)out.push({a:wallPoint(w,cursor),b:w.b,z:0,h:null});return out;}
@@ -128,7 +153,7 @@ export function applyMeasuredDimensions(s){
  s.params=Object.fromEntries(Object.entries(parameterInfo).map(([k,v])=>[k,
   ['wallThickness','grossArea'].includes(k)&&s.params[k]?.status==='measured'
    ?clone(s.params[k]):{value:v[1],status:measurementStatus[k]}]));
- const after=geometry(s),minimum=r=>[Math.min(...r.poly.map(p=>p[0])),Math.min(...r.poly.map(p=>p[1]))];
+ const after=geometry(s),minimum=r=>[r.id==='office'?0:Math.min(...r.poly.map(p=>p[0])),Math.min(...r.poly.map(p=>p[1]))];
  for(const [id,measured]of Object.entries(measurementOpenings))s.openingOverrides[id]={...s.openingOverrides[id],...measured};
  for(const objects of [s.items,s.servicePoints])for(const o of objects){
   const oldRoom=before.rooms.find(r=>r.usable&&pointInPoly([o.x,o.y],r.poly));if(!oldRoom)continue;
@@ -136,7 +161,7 @@ export function applyMeasuredDimensions(s){
   o.x+=b[0]-a[0];o.y+=b[1]-a[1];
   keepObjectInRoom(o,room,s.params.wallThickness.value);
  }
- s.measurementRevision=measurementRevision;s.notes=measurementNotes;
+ s.hallWidthBasis='clear';s.balconyShape='external-return';s.lobbySideIsPassage=false;s.measurementRevision=measurementRevision;s.notes=measurementNotes;
  return s;
 }
 // On a survey update, shrinking a room must not strand existing furniture beyond
@@ -163,17 +188,25 @@ export function validateState(s){
  // Keep legacy saved layouts intact. New fields reproduce their previous geometry,
  // rather than silently replacing a user's saved furniture or measurements.
  if(s.params?.leftWidth&&s.params?.balconyWidth){
+  s.params.balconyClearWidth??={value:Math.max(.3,s.params.balconyWidth.value-s.params.wallThickness.value),status:'derived'};
+  s.params.balconyDoorReturnWidth??={value:0,status:'assistant-estimate'};s.params.balconyDoorReturnDepth??={value:0,status:'assistant-estimate'};
   s.params.officeWidth??=clone(s.params.leftWidth);
   s.params.officeNotchWidth??={value:1.05,status:'assistant-estimate'};
   s.params.receptionWidth??={value:s.params.leftWidth.value-.35-s.params.balconyWidth.value,status:'assistant-estimate'};
   s.params.lobbyWidth??={value:s.params.kitchenWidth.value-s.params.courtyardWidth.value,status:'assistant-estimate'};
   s.params.officeDepth??={value:s.params.ensuiteDepth.value+s.params.bathDepth.value,status:'derived'};
+  s.params.receptionLength??={value:s.params.ensuiteDepth.value+s.params.bathDepth.value+s.params.lobbyDepth.value+s.params.kitchenDepth.value+s.params.receptionTail.value-s.params.officeDepth.value,status:'derived'};
   s.params.ensuiteWidth??={value:s.params.kitchenWidth.value-s.params.courtyardWidth.value,status:'derived'};
  }
  if(typeof s.name!=='string'||s.name.length>100||!Array.isArray(s.items)||s.items.length>400||!Array.isArray(s.servicePoints)||s.servicePoints.length>300)throw Error('بيانات التصميم غير صحيحة أو أكبر من الحد المتاح.');
  for(const [k,v]of Object.entries(parameterInfo)){const p=s.params?.[k];if(!p||!Number.isFinite(p.value)||p.value<v[2]||p.value>v[3]||!['measured','derived','user-estimate','assistant-estimate'].includes(p.status))throw Error('مقاسات أو حالات قياس غير صالحة.');}
  if(s.params.kitchenWidth.value-s.params.courtyardWidth.value<1.6||s.params.entryReturn.value>s.params.ensuiteDepth.value)throw Error('المقاسات تتعارض مع الحيطان المشتركة.');
- const bounds=geometry(s).bands;
+ const checkedGeometry=geometry(s),bounds=checkedGeometry.bands;
+ if(s.balconyShape==='external-return'){
+  const doorWall=checkedGeometry.walls.find(w=>w.id==='office-bottom'),op=doorWall.openings.find(o=>o.id==='door-office-balcony'),start=wallPoint(doorWall,op.center-op.width/2)[0],end=wallPoint(doorWall,op.center+op.width/2)[0],t=s.params.wallThickness.value/2;
+  if(s.params.balconyClearWidth.value<op.width+.1||bounds.F>=bounds.Z||bounds.G<=bounds.N||bounds.G>=bounds.O-.1||start<bounds.Z+t||end>bounds.A-t)throw Error('البروز والردّة لا يتركان فتحة باب المكتب كاملة داخل البلكونة.');
+ }
+ if(bounds.P<bounds.J-.001)throw Error('ركنة المدخل تتداخل مع المطبخ؛ راجع طول حائط الريسبشن والجزء الأخير.');
  if(bounds.O<bounds.H-.001||bounds.O>=bounds.J-.1)throw Error('طول المكتب يتعارض مع محاذاة الحمامات والمطبخ.');
  if(bounds.X<=0||bounds.X>=bounds.C||bounds.C>=bounds.R-.5||bounds.E>=bounds.R-.1||bounds.L>bounds.C||bounds.V>=bounds.T-.3)throw Error('الأبعاد تفصل مداخل الغرف أو تجعل امتداد الريسبشن خارج حدوده.');
  if(!s.openingOverrides||typeof s.openingOverrides!=='object'||Array.isArray(s.openingOverrides)||!s.alternatives||!['cooker','hob'].includes(s.alternatives.cooking)||!['shower','tub'].includes(s.alternatives.bathing)||!['gasHeater','electricHeater'].includes(s.alternatives.heater))throw Error('بدائل أو فتحات غير صالحة.');

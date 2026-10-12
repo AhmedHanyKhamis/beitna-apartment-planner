@@ -15,6 +15,6 @@ export function checkCollisions(s,g){const warnings=[],add=(ids,message,severity
  for(let i=0;i<s.items.length;i++){const a=s.items[i];for(const b of s.items.slice(i+1))if(vertical(a,b)&&overlap(polys.get(a.id),polys.get(b.id)))add([a.id,b.id],`${a.name} يتداخل مع ${b.name}.`,'error');
   for(const c of clearances(a)){for(const b of s.items)if(b.id!==a.id&&vertical(c,b)&&overlap(c.poly,polys.get(b.id)))add([a.id,b.id],`${a.name}: ${c.label} تتعارض مع ${b.name}.`);if(c.kind==='front'&&c.poly.some(p=>!g.rooms.some(r=>r.usable&&pointInPoly(p,r.poly))))add([a.id],`${a.name}: مساحة فتح الجهاز خارج الأرضية.`);}
  }
- const washer=s.items.find(o=>o.type==='washer');if(washer){const room=g.rooms.find(r=>r.id==='lobby');if(pointInPoly([washer.x,washer.y],room.poly)){const clearance=(Math.max(...room.poly.map(p=>p[1]))-Math.min(...room.poly.map(p=>p[1])))-washer.d-g.walls[0].thickness;add([washer.id],`الغسالة في الطرقة الصغيرة: العمق المتبقي حوالي ${clearance.toFixed(2)} م؛ جرّب موضعًا لا يضيّق المرور.`);}}
+ const washer=s.items.find(o=>o.type==='washer');if(washer){const room=g.rooms.find(r=>r.id==='lobby');if(s.lobbySideIsPassage!==false&&pointInPoly([washer.x,washer.y],room.poly)){const clearance=(Math.max(...room.poly.map(p=>p[1]))-Math.min(...room.poly.map(p=>p[1])))-washer.d-g.walls[0].thickness;add([washer.id],`الغسالة في الطرقة الصغيرة: العمق المتبقي حوالي ${clearance.toFixed(2)} م؛ جرّب موضعًا لا يضيّق المرور.`);}}
  return warnings;
 }
